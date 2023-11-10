@@ -1,0 +1,13 @@
+# Ignore all files without any extension.
+*
+!*.*
+!*/
+
+# Ignore all compiled output files.
+*.o
+
+# Unignore makefile.
+!makefile
+
+# Ignore editor settings.
+.vscode/
