@@ -1,30 +1,29 @@
-#include "utils.hpp"
+#include "../utils.hpp"
 
 #include <bitset>
-#include <cstdlib>
 #include <ctime>
 #include <sstream>
 
 bool
-utils::getRandomBool()
+utils::general::getRandomBool()
 {
   return rand() % 2 == 0;
 }
 
 unsigned short
-utils::parseBinaryStr(const std::string &text)
+utils::general::parseBinaryStr(const std::string &text)
 {
   return std::stoi(text, nullptr, 2);
 }
 
 std::string
-utils::toBinaryStr(unsigned short n, unsigned short numDigits)
+utils::general::toBinaryStr(unsigned short n, unsigned short numDigits)
 {
   return std::bitset<16>{n}.to_string().substr(16 - numDigits);
 }
 
 std::string
-utils::toString(const std::vector<unsigned short> &nums)
+utils::general::toString(const std::vector<unsigned short> &nums)
 {
   std::ostringstream outStream{};
   outStream << "[ ";
@@ -39,7 +38,7 @@ utils::toString(const std::vector<unsigned short> &nums)
 }
 
 void
-utils::initializeUtils()
+utils::general::initialize()
 {
-  srand(time(NULL));
+  std::srand(std::time(NULL));
 }

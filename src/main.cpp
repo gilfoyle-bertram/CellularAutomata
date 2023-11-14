@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "models/binary-1d-ca/binary-1d-ca.hpp"
+#include "types/types.hpp"
 #include "utils/utils.hpp"
 
 class Controller
@@ -54,6 +55,9 @@ class Controller
         "Show CA details",
         "Show isomorphic permutations",
         "Check isomorphism with another CA",
+        "Show complemented isomorphisms",
+        "Show characteristic matrix",
+        "Show characteristic polynomial",
         "Exit"
       };
 
@@ -79,6 +83,18 @@ class Controller
             this->currentCA.checkIsomorphismWithOtherCA();
             break;
 
+          case 5:
+            this->currentCA.printComplementedIsomorphisms();
+            break;
+
+          case 6:
+            this->currentCA.printCharacterisitcMatrix();
+            break;
+
+          case 7:
+            this->currentCA.printCharacterisitcPolynomial();
+            break;
+
           default:
             runSystem = false;
             std::cout << "\n";
@@ -89,7 +105,7 @@ class Controller
   public:
     Controller()
     {
-      utils::initializeUtils();
+      utils::general::initialize();
     }
 
     void
@@ -99,9 +115,9 @@ class Controller
       unsigned short leftRadius{};
       unsigned short rightRadius{};
       unsigned short rule{};
-      char boundaryConditionSymbol{};
-      models::BoundaryCondition boundaryCondition{};
-      std::vector<unsigned short> rules{};
+      char symbolForBC{};
+      types::BoundaryCondition BC{};
+      types::Rules rules{};
 
       std::cout << "\nNo. of cells (Max: " << (models::Binary1DCA::MAX_SIZE) << " cells): ";
       std::cin >> numCells;
@@ -114,11 +130,9 @@ class Controller
       std::cin >> rightRadius;
 
       std::cout << "Boundary condition [(n)ull / (p)eriodic]: ";
-      std::cin >> boundaryConditionSymbol;
+      std::cin >> symbolForBC;
 
-      boundaryCondition = boundaryConditionSymbol == 'n'
-                            ? models::BoundaryCondition::Null
-                            : models::BoundaryCondition::Periodic;
+      BC = symbolForBC == 'n' ? types::BoundaryCondition::Null : types::BoundaryCondition::Periodic;
 
       std::cout << "\n";
 
@@ -129,14 +143,7 @@ class Controller
         rules.push_back(rule);
       }
 
-      this->currentCA = models::Binary1DCA{
-        numCells,
-        leftRadius,
-        rightRadius,
-        boundaryCondition,
-        rules
-      };
-
+      this->currentCA = models::Binary1DCA{numCells, leftRadius, rightRadius, BC, rules};
       this->run();
     }
 };

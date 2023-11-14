@@ -36,8 +36,8 @@ models::BinaryCell::applyRule(const std::string &neighborhood) const
 
   // The function "utils::toBinaryStr()" can only return binary strings of length atmost 16.
   // So the below code breaks, if neighborhoodSize > 4.
-  std::string ruleStr{utils::toBinaryStr(this->rule, 1U << neighborhoodSize)};
-  return ruleStr.at(ruleStr.size() - utils::parseBinaryStr(neighborhood) - 1) == '1';
+  std::string ruleStr{utils::general::toBinaryStr(this->rule, 1U << neighborhoodSize)};
+  return ruleStr.at(ruleStr.size() - utils::general::parseBinaryStr(neighborhood) - 1) == '1';
 }
 
 void

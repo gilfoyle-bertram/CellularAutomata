@@ -9,6 +9,24 @@
 
 #include "../../utils/utils.hpp"
 
+static types::Rules
+readRules(unsigned short size)
+{
+  unsigned short rule{};
+  types::Rules rules(size, 0);
+
+  std::cout << "\n";
+
+  for (unsigned short i{}; i < size; ++i)
+  {
+    std::cout << "Rule for cell-" << (i + 1) << ": ";
+    std::cin >> rule;
+    rules.at(i) = rule;
+  }
+
+  return rules;
+}
+
 models::Binary1DCA::Binary1DCA()
 {
 }
@@ -17,8 +35,8 @@ models::Binary1DCA::Binary1DCA(
   unsigned short numCells,
   unsigned short leftRadius,
   unsigned short rightRadius,
-  models::BoundaryCondition boundaryCondition,
-  const std::vector<unsigned short> &rules
+  const types::BoundaryCondition &BC,
+  const types::Rules &rules
 )
 {
   if (leftRadius + rightRadius + 1 > numCells)
@@ -41,7 +59,8 @@ models::Binary1DCA::Binary1DCA(
   this->rightRadius = rightRadius;
   this->neighborhoodSize = leftRadius + rightRadius + 1;
   this->totalConfigs = static_cast<unsigned short>(1U << numCells);
-  this->boundaryCondition = boundaryCondition;
+  this->BC = BC;
+  this->ruleVector = models::RuleVector{rules};
 
   this->cells.resize(numCells);
   this->randomizeConfig();
@@ -53,10 +72,48 @@ models::Binary1DCA::Binary1DCA(
 }
 
 bool
-models::Binary1DCA::extractRules(
-  const std::vector<unsigned short> &transitionGraph,
-  std::vector<unsigned short> &rules
-)
+models::Binary1DCA::isECA() const
+{
+  return this->leftRadius == 1 && this->rightRadius == 1;
+}
+
+// This method works only for ECAs with additive rules.
+// Let P(x) be the characteristic polynomial of the ECA under consideration.
+// If (x + 1) is not a factor of P(x), then the ECA has complemented isomorphisms.
+// Refer - https://www.researchgate.net/publication/358303083_Maximal_Length_Cellular_Automata.
+//
+// The values of x, P(x) and co-efficients of P(x) belong to GF(2).
+// So to check if (x + 1) is a factor of P(x), we need to compute P(1), since -1 == 1, in GF(2).
+// If P(1) == 0, then (x + 1) is a factor of P(x).
+// If P(1) == 1, then (x + 1) is not a factor of P(x).
+bool
+models::Binary1DCA::hasComplementedIsomorphisms() const
+{
+  if (!this->isECA())
+  {
+    throw std::domain_error{"Complemented isomorphisms are only supported for ECAs"};
+  }
+
+  types::Polynomial P{this->ruleVector.getCharactersiticPolynomial(this->BC)};
+  short valueAt1{};
+
+  for (unsigned short i{}; i < P.size(); i++)
+  {
+    valueAt1 += P.at(i);
+  }
+
+  valueAt1 = utils::math::isEven(valueAt1) ? 0 : 1;
+
+  if (valueAt1 == 0)
+  {
+    return false;
+  }
+
+  return true;
+}
+
+bool
+models::Binary1DCA::extractRules(const types::TransitionGraph &transitionGraph, types::Rules &rules)
 {
   for (unsigned short i{}; i < this->numCells; i++)
   {
@@ -65,9 +122,10 @@ models::Binary1DCA::extractRules(
 
     for (unsigned short j{}; j < this->totalConfigs; j++)
     {
-      std::string currentConfigStr{utils::toBinaryStr(j, this->numCells)};
-      std::string nextConfigStr{utils::toBinaryStr(transitionGraph.at(j), this->numCells)};
-      unsigned int neighborhood{utils::parseBinaryStr(this->getNeighborhood(i, currentConfigStr))};
+      std::string currentConfigStr{utils::general::toBinaryStr(j, this->numCells)};
+      std::string nextConfigStr{utils::general::toBinaryStr(transitionGraph.at(j), this->numCells)};
+
+      unsigned short neighborhood{utils::general::parseBinaryStr(this->getNeighborhood(i, currentConfigStr))};
       char nextState{nextConfigStr.at(i)};
 
       if (currentRuleTable.at(neighborhood) == 'X')
@@ -86,7 +144,7 @@ models::Binary1DCA::extractRules(
       currentRuleStream << (currentChar == 'X' ? '0' : currentChar);
     }
 
-    rules.at(i) = utils::parseBinaryStr(currentRuleStream.str());
+    rules.at(i) = utils::general::parseBinaryStr(currentRuleStream.str());
   }
 
   return true;
@@ -101,21 +159,18 @@ models::Binary1DCA::getNextConfig(unsigned short currentConfig)
   }
 
   std::ostringstream nextConfigStream{};
-  std::string currentConfigStr{utils::toBinaryStr(currentConfig, this->numCells)};
+  std::string currentConfigStr{utils::general::toBinaryStr(currentConfig, this->numCells)};
 
   for (unsigned short i{}; i < this->numCells; i++)
   {
     nextConfigStream << this->cells.at(i).applyRule(this->getNeighborhood(i, currentConfigStr));
   }
 
-  return (this->globalConfigMap[currentConfig] = utils::parseBinaryStr(nextConfigStream.str()));
+  return (this->globalConfigMap[currentConfig] = utils::general::parseBinaryStr(nextConfigStream.str()));
 }
 
 std::string
-models::Binary1DCA::getNeighborhood(
-  unsigned short cellIndex,
-  const std::string &configStr
-) const
+models::Binary1DCA::getNeighborhood(unsigned short cellIndex, const std::string &configStr) const
 {
   std::ostringstream neighborhood{};
 
@@ -123,10 +178,7 @@ models::Binary1DCA::getNeighborhood(
   {
     short currentNeighborIndex{static_cast<short>((cellIndex - l))};
 
-    if (
-      currentNeighborIndex < 0 &&
-      this->boundaryCondition == models::BoundaryCondition::Null
-    )
+    if (currentNeighborIndex < 0 && this->BC == types::BoundaryCondition::Null)
     {
       neighborhood << '0';
       continue;
@@ -141,10 +193,7 @@ models::Binary1DCA::getNeighborhood(
   {
     short currentNeighborIndex{static_cast<short>((cellIndex + r))};
 
-    if (
-      currentNeighborIndex >= this->numCells &&
-      this->boundaryCondition == models::BoundaryCondition::Null
-    )
+    if (currentNeighborIndex >= this->numCells && this->BC == types::BoundaryCondition::Null)
     {
       neighborhood << '0';
       continue;
@@ -156,30 +205,12 @@ models::Binary1DCA::getNeighborhood(
   return neighborhood.str();
 }
 
-std::vector<unsigned short>
-models::Binary1DCA::readRules()
-{
-  unsigned short rule{};
-  std::vector<unsigned short> rules(this->numCells, 0);
-
-  std::cout << "\n";
-
-  for (unsigned short i{}; i < this->numCells; ++i)
-  {
-    std::cout << "Rule for cell-" << (i + 1) << ": ";
-    std::cin >> rule;
-    rules.at(i) = rule;
-  }
-
-  return rules;
-}
-
 void
 models::Binary1DCA::randomizeConfig()
 {
   for (auto &cell : this->cells)
   {
-    cell.setState(utils::getRandomBool());
+    cell.setState(utils::general::getRandomBool());
   }
 }
 
@@ -193,16 +224,16 @@ models::Binary1DCA::getCurrentConfig() const
     currentConfigStream << static_cast<unsigned short>(cell.getState());
   }
 
-  return utils::parseBinaryStr(currentConfigStream.str());
+  return utils::general::parseBinaryStr(currentConfigStream.str());
 }
 
-std::pair<models::BoundaryCondition, std::string>
+std::pair<types::BoundaryCondition, std::string>
 models::Binary1DCA::getBoundaryCondition() const
 {
-  std::pair<models::BoundaryCondition, std::string> result{};
+  std::pair<types::BoundaryCondition, std::string> result{};
 
-  result.first = this->boundaryCondition;
-  result.second = this->boundaryCondition == models::BoundaryCondition::Null ? "Null" : "Periodic";
+  result.first = this->BC;
+  result.second = this->BC == types::BoundaryCondition::Null ? "Null" : "Periodic";
 
   return result;
 }
@@ -210,10 +241,10 @@ models::Binary1DCA::getBoundaryCondition() const
 // For a CA, the out-degree of any node is exactly 1.
 // By exploiting this property, we can represent the transition graph as a 1D-Array itself.
 // So "transitionGraph.at(i) = j", means there is an edge from configuration i to configuration j.
-std::vector<unsigned short>
+types::TransitionGraph
 models::Binary1DCA::getTransitionGraph()
 {
-  std::vector<unsigned short> adjacencyList{};
+  types::TransitionGraph adjacencyList{};
 
   for (unsigned short i{}; i < this->totalConfigs; i++)
   {
@@ -287,7 +318,7 @@ models::Binary1DCA::printDetails() const
 void
 models::Binary1DCA::updateConfig()
 {
-  std::string currentConfigStr{utils::toBinaryStr(this->getCurrentConfig(), this->numCells)};
+  std::string currentConfigStr{utils::general::toBinaryStr(this->getCurrentConfig(), this->numCells)};
 
   for (unsigned short i{}; i < this->numCells; i++)
   {
@@ -298,8 +329,9 @@ models::Binary1DCA::updateConfig()
 void
 models::Binary1DCA::printTransitionGraph()
 {
-  const std::vector<unsigned short> &transitionGraph{this->getTransitionGraph()};
+  const types::TransitionGraph &transitionGraph{this->getTransitionGraph()};
   std::unordered_set<unsigned short> visitedConfigs{};
+
   unsigned short currentConfig{};
   bool isNewComponent{true};
 
@@ -338,7 +370,7 @@ void
 models::Binary1DCA::printIsomorphicPermutations()
 {
   unsigned int counter{};
-  std::vector<unsigned short> originalTransitionGraph{this->getTransitionGraph()};
+  types::TransitionGraph originalTransitionGraph{this->getTransitionGraph()};
   std::vector<unsigned short> originalPermutation{};
 
   for (unsigned short i{}; i < this->totalConfigs; i++)
@@ -350,28 +382,28 @@ models::Binary1DCA::printIsomorphicPermutations()
     << "\n"
     << "+" << std::string(10, '-')
     << "+" << std::string(50, '-')
-    << "+" << std::string(50, '-')
+    << "+" << std::string(30, '-')
     << "+"
     << "\n";
 
   std::cout
     << "|" << std::setw(10) << "S.No "
     << "|" << std::setw(50) << "Permutation "
-    << "|" << std::setw(50) << "Rules "
+    << "|" << std::setw(30) << "Rules "
     << "|"
     << "\n";
 
   std::cout
     << "+" << std::string(10, '-')
     << "+" << std::string(50, '-')
-    << "+" << std::string(50, '-')
+    << "+" << std::string(30, '-')
     << "+"
     << "\n";
 
 #pragma omp parallel
   {
-    std::vector<unsigned short> localTransitionGraph(this->totalConfigs, 0);
-    std::vector<unsigned short> localRules(this->numCells, 0);
+    types::TransitionGraph localTransitionGraph(this->totalConfigs, 0);
+    types::Rules localRules(this->numCells, 0);
     std::vector<unsigned short> localPermutation{originalPermutation};
 
 #pragma omp for
@@ -399,21 +431,147 @@ models::Binary1DCA::printIsomorphicPermutations()
           {
             std::cout
               << "|" << std::setw(9) << ++counter
-              << " |" << std::setw(49) << utils::toString(localPermutation)
-              << " |" << std::setw(49) << utils::toString(localRules)
+              << " |" << std::setw(49) << utils::general::toString(localPermutation)
+              << " |" << std::setw(29) << utils::general::toString(localRules)
               << " |"
               << "\n";
 
             std::cout
               << "+" << std::string(10, '-')
               << "+" << std::string(50, '-')
-              << "+" << std::string(50, '-')
+              << "+" << std::string(30, '-')
               << "+"
               << "\n";
           }
         }
       } while (std::next_permutation(localPermutation.begin() + 1, localPermutation.end()));
     }
+  }
+}
+
+void
+models::Binary1DCA::printComplementedIsomorphisms() const
+{
+  try
+  {
+    if (!this->hasComplementedIsomorphisms())
+    {
+      std::cout
+        << "\nNo complemented isomorphisms"
+        << "\n";
+
+      return;
+    }
+
+    std::cout
+      << "\n"
+      << "+" << std::string(10, '-')
+      << "+" << std::string(30, '-')
+      << "+"
+      << "\n";
+
+    std::cout
+      << "|" << std::setw(10) << "S.No "
+      << "|" << std::setw(30) << "Rules "
+      << "|"
+      << "\n";
+
+    std::cout
+      << "+" << std::string(10, '-')
+      << "+" << std::string(30, '-')
+      << "+"
+      << "\n";
+
+    for (unsigned short i{}; i < (1 << this->numCells); i++)
+    {
+      unsigned short currentCell{};
+      unsigned short currentIndex{i};
+      unsigned short indexMask{static_cast<unsigned short>((1 << this->numCells) - 1)};
+
+      std::ostringstream currentRuleVector{};
+      currentRuleVector << "[ ";
+
+      while (indexMask)
+      {
+        if (currentIndex & 1)
+        {
+          currentRuleVector << (255 - this->ruleVector.at(currentCell)) << " ";
+        }
+        else
+        {
+          currentRuleVector << this->ruleVector.at(currentCell) << " ";
+        }
+
+        currentIndex >>= 1;
+        indexMask >>= 1;
+        currentCell += 1;
+      }
+
+      currentRuleVector << "]";
+
+      std::cout
+        << "|" << std::setw(9) << (i + 1)
+        << " |" << std::setw(29) << currentRuleVector.str()
+        << " |"
+        << "\n";
+
+      std::cout
+        << "+" << std::string(10, '-')
+        << "+" << std::string(30, '-')
+        << "+"
+        << "\n";
+    }
+  }
+  catch (const std::exception &error)
+  {
+    std::cerr
+      << "\n"
+      << error.what()
+      << '\n';
+  }
+}
+
+void
+models::Binary1DCA::printCharacterisitcMatrix() const
+{
+  try
+  {
+    if (!this->isECA())
+    {
+      throw std::domain_error{"Charactersitic matrix is only supported for ECAs"};
+    }
+
+    types::Matrix M{this->ruleVector.getCharacteristicMatrix(this->BC)};
+    utils::matrix::print(M);
+  }
+  catch (const std::exception &error)
+  {
+    std::cerr
+      << "\n"
+      << error.what()
+      << '\n';
+  }
+}
+
+void
+models::Binary1DCA::printCharacterisitcPolynomial() const
+{
+  try
+  {
+    if (!this->isECA())
+    {
+      throw std::domain_error{"Characteristic polynomial is only supported for ECAs"};
+    }
+
+    types::Polynomial P{this->ruleVector.getCharactersiticPolynomial(this->BC)};
+    utils::polynomial::print(P);
+  }
+  catch (const std::exception &error)
+  {
+    std::cerr
+      << "\n"
+      << error.what()
+      << '\n';
   }
 }
 
@@ -426,12 +584,12 @@ models::Binary1DCA::checkIsomorphismWithOtherCA()
     this->numCells,
     this->leftRadius,
     this->rightRadius,
-    this->boundaryCondition,
-    this->readRules()
+    this->BC,
+    readRules(this->numCells)
   };
 
-  std::vector<unsigned short> otherTransitionGraph{other.getTransitionGraph()};
-  std::vector<unsigned short> originalTransitionGraph{this->getTransitionGraph()};
+  types::TransitionGraph otherTransitionGraph{other.getTransitionGraph()};
+  types::TransitionGraph originalTransitionGraph{this->getTransitionGraph()};
   std::vector<unsigned short> originalPermutation{};
 
   for (unsigned short i{}; i < this->totalConfigs; i++)
@@ -441,7 +599,7 @@ models::Binary1DCA::checkIsomorphismWithOtherCA()
 
 #pragma omp parallel
   {
-    std::vector<unsigned short> localTransitionGraph(this->totalConfigs, 0);
+    types::TransitionGraph localTransitionGraph(this->totalConfigs, 0);
     std::vector<unsigned short> localPermutation{originalPermutation};
 
 #pragma omp for

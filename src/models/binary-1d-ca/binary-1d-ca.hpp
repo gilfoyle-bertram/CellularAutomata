@@ -5,16 +5,12 @@
 #include <unordered_map>
 #include <vector>
 
+#include "../../types/types.hpp"
 #include "../binary-cell/binary-cell.hpp"
+#include "../rule-vector/rule-vector.hpp"
 
 namespace models
 {
-  enum BoundaryCondition
-  {
-    Null,
-    Periodic
-  };
-
   class Binary1DCA
   {
     private:
@@ -23,24 +19,27 @@ namespace models
       unsigned short rightRadius{};
       unsigned short neighborhoodSize{};
       unsigned short totalConfigs{};
-      BoundaryCondition boundaryCondition{};
+
       std::vector<BinaryCell> cells{};
       std::unordered_map<unsigned short, unsigned short> globalConfigMap{};
 
+      types::BoundaryCondition BC{};
+      models::RuleVector ruleVector{};
+
       bool
-      extractRules(
-        const std::vector<unsigned short> &transitionGraph,
-        std::vector<unsigned short> &rules
-      );
+      isECA() const;
+
+      bool
+      hasComplementedIsomorphisms() const;
+
+      bool
+      extractRules(const types::TransitionGraph &transitionGraph, types::Rules &rules);
 
       unsigned short
       getNextConfig(unsigned short currentConfig);
 
       std::string
       getNeighborhood(unsigned short cellIndex, const std::string &configStr) const;
-
-      std::vector<unsigned short>
-      readRules();
 
       void
       randomizeConfig();
@@ -56,17 +55,17 @@ namespace models
         unsigned short numCells,
         unsigned short leftRadius,
         unsigned short rightRadius,
-        BoundaryCondition boundaryCondition,
-        const std::vector<unsigned short> &rules
+        const types::BoundaryCondition &BC,
+        const types::Rules &rules
       );
 
       unsigned short
       getCurrentConfig() const;
 
-      std::pair<BoundaryCondition, std::string>
+      std::pair<types::BoundaryCondition, std::string>
       getBoundaryCondition() const;
 
-      std::vector<unsigned short>
+      types::TransitionGraph
       getTransitionGraph();
 
       void
@@ -82,8 +81,17 @@ namespace models
       printIsomorphicPermutations();
 
       void
+      printComplementedIsomorphisms() const;
+
+      void
+      printCharacterisitcMatrix() const;
+
+      void
+      printCharacterisitcPolynomial() const;
+
+      void
       checkIsomorphismWithOtherCA();
   };
-};
+}
 
 #endif
