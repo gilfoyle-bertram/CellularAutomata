@@ -4,72 +4,115 @@
 #include <string>
 #include <vector>
 
+#include "../terminal/terminal.hpp"
 #include "../types/types.hpp"
 
 namespace utils::general
 {
   bool
-  getRandomBool();
+  get_random_bool();
 
-  unsigned short
-  parseBinaryStr(const std::string &text);
-
-  std::string
-  toBinaryStr(unsigned short n, unsigned short numDigits);
-
-  std::string
-  toString(const std::vector<unsigned short> &nums);
+  types::whole_num
+  get_choice(const std::vector<std::string> &choices);
 
   void
   initialize();
+
+  void
+  print_header(
+    const std::vector<std::pair<std::string, types::whole_num>> &headings,
+    const std::string &color = colors::cyan
+  );
+
+  void
+  print_row(
+    const std::vector<std::pair<std::string, types::whole_num>> &entries,
+    const std::string &color = colors::cyan
+  );
+
+  void
+  print_msg(const std::string &msg, const std::string &color = "");
 }
 
 namespace utils::math
 {
   bool
-  isOdd(short num);
+  is_odd(types::num num);
 
   bool
-  isEven(short num);
+  is_even(types::num num);
 }
 
 namespace utils::matrix
 {
   bool
-  isSquare(const types::Matrix &A);
+  is_square(const types::matrix &A);
 
   bool
-  canAdd(const types::Matrix &A, const types::Matrix &B);
+  can_add(const types::matrix &A, const types::matrix &B);
 
   bool
-  canMultiply(const types::Matrix &A, const types::Matrix &B);
+  can_multiply(const types::matrix &A, const types::matrix &B);
 
-  short
-  getTrace(const types::Matrix &A);
+  types::num
+  get_trace(const types::matrix &A);
 
-  types::Matrix
-  getIdentity(unsigned short size);
+  types::matrix
+  get_identity(types::whole_num size);
 
-  types::Matrix
-  add(const types::Matrix &A, const types::Matrix &B);
+  types::matrix
+  add(const types::matrix &A, const types::matrix &B);
 
-  types::Matrix
-  multiply(const types::Matrix &A, const types::Matrix &B);
+  types::matrix
+  multiply(const types::matrix &A, const types::matrix &B);
 
-  types::Matrix
-  scalarMultiply(const types::Matrix &A, short x);
+  types::matrix
+  scalar_multiply(const types::matrix &A, types::num x);
 
-  types::Polynomial
-  getCharacteristicPolynomial(const types::Matrix &A);
+  types::polynomial
+  get_characteristic_polynomial(const types::matrix &A);
+
+  std::string
+  to_string(const types::matrix &A);
 
   void
-  print(const types::Matrix &A);
+  print(const types::matrix &A, const std::string &color = colors::cyan);
+}
+
+namespace utils::number
+{
+  types::whole_num
+  parse_binary_str(const std::string &txt);
+
+  std::string
+  to_binary_str(types::whole_num num, types::whole_num num_digits);
+
+  std::string
+  to_string(types::whole_num num, types::whole_num base, types::whole_num num_digits);
 }
 
 namespace utils::polynomial
 {
+  std::string
+  to_string(const types::polynomial &coeffs);
+
   void
-  print(const types::Polynomial &P);
+  print(const types::polynomial &coeffs, const std::string &color = colors::cyan);
+}
+
+namespace utils::transition_graph
+{
+  std::string
+  to_string(const types::transition_graph &graph);
+
+  void
+  print(const types::transition_graph &graph, const std::string &color = colors::cyan);
+}
+
+namespace utils::vector
+{
+  std::string
+  to_string(const std::vector<types::whole_num> &nums);
 }
 
 #endif

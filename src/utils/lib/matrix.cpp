@@ -1,49 +1,53 @@
 #include "../utils.hpp"
 
-#include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 #include "../../types/types.hpp"
 
 bool
-utils::matrix::isSquare(const types::Matrix &A)
+utils::matrix::is_square(const types::matrix &A)
 {
-  unsigned short numRows{static_cast<unsigned short>(A.size())};
-  unsigned short numCols{static_cast<unsigned short>(A.at(0).size())};
-  return numRows == numCols;
+  types::whole_num rows{static_cast<types::whole_num>(A.size())};
+  types::whole_num cols{static_cast<types::whole_num>(A.at(0).size())};
+
+  return rows == cols;
 }
 
 bool
-utils::matrix::canAdd(const types::Matrix &A, const types::Matrix &B)
+utils::matrix::can_add(const types::matrix &A, const types::matrix &B)
 {
-  unsigned short numRowsInA{static_cast<unsigned short>(A.size())};
-  unsigned short numRowsInB{static_cast<unsigned short>(B.size())};
-  unsigned short numColsInA{static_cast<unsigned short>(A.at(0).size())};
-  unsigned short numColsInB{static_cast<unsigned short>(B.at(0).size())};
-  return numRowsInA == numRowsInB && numColsInA == numColsInB;
+  types::whole_num a_rows{static_cast<types::whole_num>(A.size())};
+  types::whole_num b_rows{static_cast<types::whole_num>(B.size())};
+
+  types::whole_num a_cols{static_cast<types::whole_num>(A.at(0).size())};
+  types::whole_num b_cols{static_cast<types::whole_num>(B.at(0).size())};
+
+  return a_rows == b_rows && a_cols == b_cols;
 }
 
 bool
-utils::matrix::canMultiply(const types::Matrix &A, const types::Matrix &B)
+utils::matrix::can_multiply(const types::matrix &A, const types::matrix &B)
 {
-  unsigned short numColsInA{static_cast<unsigned short>(A.at(0).size())};
-  unsigned short numRowsInB{static_cast<unsigned short>(B.size())};
-  return numColsInA == numRowsInB;
+  types::whole_num a_cols{static_cast<types::whole_num>(A.at(0).size())};
+  types::whole_num b_rows{static_cast<types::whole_num>(B.size())};
+
+  return a_cols == b_rows;
 }
 
-short
-utils::matrix::getTrace(const types::Matrix &A)
+types::num
+utils::matrix::get_trace(const types::matrix &A)
 {
-  short result{};
+  types::num result{};
 
-  if (!utils::matrix::isSquare(A))
+  if (!utils::matrix::is_square(A))
   {
-    throw std::domain_error{"Cannot compute trace of a non-square matrix"};
+    throw std::domain_error{"cannot compute trace of a non-square matrix"};
   }
 
-  unsigned short size{static_cast<unsigned short>(A.size())};
+  types::whole_num size{static_cast<types::whole_num>(A.size())};
 
-  for (unsigned short i{}; i < size; i++)
+  for (types::whole_num i{}; i < size; i++)
   {
     result += A.at(i).at(i);
   }
@@ -51,40 +55,40 @@ utils::matrix::getTrace(const types::Matrix &A)
   return result;
 }
 
-types::Matrix
-utils::matrix::getIdentity(unsigned short n)
+types::matrix
+utils::matrix::get_identity(types::whole_num size)
 {
-  types::Matrix I{};
-  I.resize(n);
+  types::matrix I{};
+  I.resize(size);
 
-  for (unsigned short i{}; i < n; i++)
+  for (types::whole_num i{}; i < size; i++)
   {
-    I.at(i).resize(n);
+    I.at(i).resize(size);
     I.at(i).at(i) = 1;
   }
 
   return I;
 }
 
-types::Matrix
-utils::matrix::add(const types::Matrix &A, const types::Matrix &B)
+types::matrix
+utils::matrix::add(const types::matrix &A, const types::matrix &B)
 {
-  if (!utils::matrix::canAdd(A, B))
+  if (!utils::matrix::can_add(A, B))
   {
-    throw std::domain_error{"Matrices incompatible for addition"};
+    throw std::domain_error{"matrices incompatible for addition"};
   }
 
-  unsigned short numRows{static_cast<unsigned short>(A.size())};
-  unsigned short numCols{static_cast<unsigned short>(A.at(0).size())};
+  types::whole_num rows{static_cast<types::whole_num>(A.size())};
+  types::whole_num cols{static_cast<types::whole_num>(A.at(0).size())};
 
-  types::Matrix C{};
-  C.resize(numRows);
+  types::matrix C{};
+  C.resize(rows);
 
-  for (unsigned short i{}; i < numRows; i++)
+  for (types::whole_num i{}; i < rows; i++)
   {
-    C.at(i).resize(numCols);
+    C.at(i).resize(cols);
 
-    for (unsigned short j{}; j < numCols; j++)
+    for (types::whole_num j{}; j < cols; j++)
     {
       C.at(i).at(j) = A.at(i).at(j) + B.at(i).at(j);
     }
@@ -93,28 +97,28 @@ utils::matrix::add(const types::Matrix &A, const types::Matrix &B)
   return C;
 }
 
-types::Matrix
-utils::matrix::multiply(const types::Matrix &A, const types::Matrix &B)
+types::matrix
+utils::matrix::multiply(const types::matrix &A, const types::matrix &B)
 {
-  if (!utils::matrix::canMultiply(A, B))
+  if (!utils::matrix::can_multiply(A, B))
   {
-    throw std::domain_error{"Matrices incompatible for multiplication"};
+    throw std::domain_error{"matrices incompatible for multiplication"};
   }
 
-  unsigned short numRowsInA{static_cast<unsigned short>(A.size())};
-  unsigned short numColsInA{static_cast<unsigned short>(A.at(0).size())};
-  unsigned short numColsInB{static_cast<unsigned short>(B.at(0).size())};
+  types::whole_num a_rows{static_cast<types::whole_num>(A.size())};
+  types::whole_num a_cols{static_cast<types::whole_num>(A.at(0).size())};
+  types::whole_num b_cols{static_cast<types::whole_num>(B.at(0).size())};
 
-  types::Matrix C{};
-  C.resize(numRowsInA);
+  types::matrix C{};
+  C.resize(a_rows);
 
-  for (unsigned short i{}; i < numRowsInA; i++)
+  for (types::whole_num i{}; i < a_rows; i++)
   {
-    C.at(i).resize(numColsInB);
+    C.at(i).resize(b_cols);
 
-    for (unsigned short j{}; j < numColsInB; j++)
+    for (types::whole_num j{}; j < b_cols; j++)
     {
-      for (unsigned short k{}; k < numColsInA; k++)
+      for (types::whole_num k{}; k < a_cols; k++)
       {
         C.at(i).at(j) += A.at(i).at(k) * B.at(k).at(j);
       }
@@ -124,74 +128,83 @@ utils::matrix::multiply(const types::Matrix &A, const types::Matrix &B)
   return C;
 }
 
-types::Matrix
-utils::matrix::scalarMultiply(const types::Matrix &A, short x)
+types::matrix
+utils::matrix::scalar_multiply(const types::matrix &A, types::num x)
 {
-  unsigned short numRows{static_cast<unsigned short>(A.size())};
-  unsigned short numCols{static_cast<unsigned short>(A.at(0).size())};
+  types::whole_num rows{static_cast<types::whole_num>(A.size())};
+  types::whole_num cols{static_cast<types::whole_num>(A.at(0).size())};
 
-  types::Matrix xA{};
-  xA.resize(numRows);
+  types::matrix x_A{};
+  x_A.resize(rows);
 
-  for (unsigned short i{}; i < numRows; i++)
+  for (types::whole_num i{}; i < rows; i++)
   {
-    xA.at(i).resize(numCols);
+    x_A.at(i).resize(cols);
 
-    for (unsigned short j{}; j < numCols; j++)
+    for (types::whole_num j{}; j < cols; j++)
     {
-      xA.at(i).at(j) = x * A.at(i).at(j);
+      x_A.at(i).at(j) = x * A.at(i).at(j);
     }
   }
 
-  return xA;
+  return x_A;
 }
 
 // This function uses Souriau method to compute the characteristic polynomial of a matrix.
-// Refer - https://math.stackexchange.com/questions/405822/what-is-the-fastest-way-to-find-the-characteristic-polynomial-of-a-matrix.
-types::Polynomial
-utils::matrix::getCharacteristicPolynomial(const types::Matrix &A)
+// Refer, https://math.stackexchange.com/questions/405822/what-is-the-fastest-way-to-find-the-characteristic-polynomial-of-a-matrix.
+types::polynomial
+utils::matrix::get_characteristic_polynomial(const types::matrix &A)
 {
-  if (!utils::matrix::isSquare(A))
+  if (!utils::matrix::is_square(A))
   {
-    throw std::domain_error{"Cannot compute characteristic polynoial of a non-square matrix"};
+    throw std::domain_error{"cannot compute characteristic polynoial of a non-square matrix"};
   }
 
-  unsigned short n{static_cast<unsigned short>(A.size())};
-  types::Polynomial P{};
-  types::Matrix C{A};
-  types::Matrix I{utils::matrix::getIdentity(n)};
+  types::whole_num size{static_cast<types::whole_num>(A.size())};
+  types::polynomial coeffs{};
 
-  P.resize(n + 1);
-  P.at(n) = 1;
-  P.at(n - 1) = -getTrace(C);
+  types::matrix C{A};
+  types::matrix I{utils::matrix::get_identity(size)};
 
-  for (unsigned short i{2}; i <= n; i++)
+  coeffs.resize(size + 1);
+  coeffs.at(size) = 1;
+  coeffs.at(size - 1) = -get_trace(C);
+
+  for (types::whole_num i{2}; i <= size; i++)
   {
-    types::Matrix T1{utils::matrix::scalarMultiply(I, P.at(n - i + 1))};
-    types::Matrix T2{utils::matrix::add(C, T1)};
+    types::matrix T1{utils::matrix::scalar_multiply(I, coeffs.at(size - i + 1))};
+    types::matrix T2{utils::matrix::add(C, T1)};
 
     C = utils::matrix::multiply(A, T2);
-    P.at(n - i) = -getTrace(C) / i;
+    coeffs.at(size - i) = -get_trace(C) / i;
   }
 
-  return P;
+  return coeffs;
+}
+
+std::string
+utils::matrix::to_string(const types::matrix &A)
+{
+  std::ostringstream out_stream{};
+
+  types::whole_num rows{static_cast<types::whole_num>(A.size())};
+  types::whole_num cols{static_cast<types::whole_num>(A.at(0).size())};
+
+  for (types::whole_num i{}; i < rows; i++)
+  {
+    for (types::whole_num j{}; j < cols; j++)
+    {
+      out_stream << A.at(i).at(j) << " ";
+    }
+
+    out_stream << (i == rows - 1 ? "" : "\n");
+  }
+
+  return out_stream.str();
 }
 
 void
-utils::matrix::print(const types::Matrix &A)
+utils::matrix::print(const types::matrix &A, const std::string &color)
 {
-  unsigned short numRows{static_cast<unsigned short>(A.size())};
-  unsigned short numCols{static_cast<unsigned short>(A.at(0).size())};
-
-  std::cout << "\n";
-
-  for (unsigned short i{}; i < numRows; i++)
-  {
-    for (unsigned short j{}; j < numCols; j++)
-    {
-      std::cout << A.at(i).at(j) << " ";
-    }
-
-    std::cout << "\n";
-  }
+  utils::general::print_msg(utils::matrix::to_string(A), color);
 }

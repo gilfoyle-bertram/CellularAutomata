@@ -11,86 +11,110 @@
 
 namespace models
 {
-  class Binary1DCA
+  class binary_1d_ca
   {
     private:
-      unsigned short numCells{};
-      unsigned short leftRadius{};
-      unsigned short rightRadius{};
-      unsigned short neighborhoodSize{};
-      unsigned short totalConfigs{};
+      types::whole_num num_cells{};
+      types::whole_num num_neighbors{};
+      types::whole_num num_configs{};
+      types::whole_num l_radius{};
+      types::whole_num r_radius{};
 
-      std::vector<BinaryCell> cells{};
-      std::unordered_map<unsigned short, unsigned short> globalConfigMap{};
+      std::vector<binary_cell> cells{};
 
-      types::BoundaryCondition BC{};
-      models::RuleVector ruleVector{};
-
-      bool
-      isECA() const;
+      types::boundary boundary{};
+      types::transition_graph graph{};
+      models::rule_vector rule_vector{};
 
       bool
-      hasComplementedIsomorphisms() const;
+      is_elementary() const;
 
       bool
-      extractRules(const types::TransitionGraph &transitionGraph, types::Rules &rules);
+      has_complemented_isomorphisms() const;
 
-      unsigned short
-      getNextConfig(unsigned short currentConfig);
+      bool
+      extract_rules(const types::transition_graph &graph, types::rules &rules) const;
+
+      types::whole_num
+      get_next_config(types::whole_num current_config);
 
       std::string
-      getNeighborhood(unsigned short cellIndex, const std::string &configStr) const;
+      get_neighborhood_str(types::whole_num cell_num, const std::string &config_str) const;
 
       void
-      randomizeConfig();
+      set_rules(const types::rules &rules);
+
+      void
+      randomize_config();
+
+      void
+      fill_transition_graph();
 
     public:
-      Binary1DCA(const Binary1DCA &other) = delete;
+      static const types::whole_num max_size{4};
 
-      static const unsigned short MAX_SIZE{4};
+      binary_1d_ca(const binary_1d_ca &other) = delete;
 
-      Binary1DCA();
+      binary_1d_ca();
 
-      Binary1DCA(
-        unsigned short numCells,
-        unsigned short leftRadius,
-        unsigned short rightRadius,
-        const types::BoundaryCondition &BC,
-        const types::Rules &rules
+      binary_1d_ca(
+        types::whole_num num_cells,
+        types::whole_num l_radius,
+        types::whole_num r_radius,
+        types::boundary boundary,
+        const types::rules &rules
       );
 
-      unsigned short
-      getCurrentConfig() const;
+      types::whole_num
+      get_num_cells() const;
 
-      std::pair<types::BoundaryCondition, std::string>
-      getBoundaryCondition() const;
+      types::whole_num
+      get_l_radius() const;
 
-      types::TransitionGraph
-      getTransitionGraph();
+      types::whole_num
+      get_r_radius() const;
+
+      types::whole_num
+      get_num_neighbors() const;
+
+      types::whole_num
+      get_num_configs() const;
+
+      types::boundary
+      get_boundary() const;
+
+      const types::transition_graph &
+      get_graph() const;
+
+      const models::rule_vector &
+      get_rule_vector() const;
+
+      types::whole_num
+      get_current_config() const;
+
+      bool
+      is_isomorphic(models::binary_1d_ca &other) const;
 
       void
-      printDetails() const;
+      print_isomorphisms() const;
 
       void
-      updateConfig();
+      print_details() const;
 
       void
-      printTransitionGraph();
+      print_transition_graph() const;
 
       void
-      printIsomorphicPermutations();
+      print_complemented_isomorphisms() const;
 
       void
-      printComplementedIsomorphisms() const;
+      print_characterisitc_matrix() const;
 
       void
-      printCharacterisitcMatrix() const;
+      print_characterisitc_polynomial() const;
 
       void
-      printCharacterisitcPolynomial() const;
-
-      void
-      checkIsomorphismWithOtherCA();
+      update_config();
   };
 }
 

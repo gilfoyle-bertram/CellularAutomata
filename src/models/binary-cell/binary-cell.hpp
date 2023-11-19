@@ -3,32 +3,34 @@
 
 #include <string>
 
+#include "../../types/types.hpp"
+
 namespace models
 {
-  class BinaryCell
+  class binary_cell
   {
     private:
       bool state{};
-      unsigned short rule{};
+      types::whole_num rule{};
 
     public:
       bool
-      getState() const;
+      get_state() const;
+
+      types::whole_num
+      get_rule() const;
 
       void
-      setState(bool state);
-
-      unsigned short
-      getRule() const;
+      set_state(bool state);
 
       void
-      setRule(unsigned short rule);
+      set_rule(types::whole_num rule);
 
       bool
-      applyRule(const std::string &neighborhood) const;
+      next_state(const std::string &neighborhood) const;
 
       void
-      updateState(const std::string &neighborhood);
+      update_state(const std::string &neighborhood);
   };
 }
 

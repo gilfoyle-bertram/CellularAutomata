@@ -1,39 +1,51 @@
 #ifndef __RULE_VECTOR__
 #define __RULE_VECTOR__
 
+#include <string>
+
 #include "../../types/types.hpp"
 
 namespace models
 {
-  class RuleVector
+  class rule_vector
   {
     private:
-      types::Rules rules{};
+      types::rules rules{};
 
       bool
-      isAdditive() const;
+      is_additive() const;
 
     public:
-      RuleVector(const RuleVector &other) = delete;
+      static bool
+      is_complementable(const types::polynomial &coeffs);
 
-      RuleVector();
+      static void
+      print_complementable_rule_vectors();
 
-      RuleVector(const types::Rules &rules);
+      rule_vector();
 
-      unsigned short
+      rule_vector(const types::rules &rules);
+
+      bool
+      is_complementable(types::boundary boundary) const;
+
+      types::whole_num
       at(std::size_t index) const;
 
-      unsigned short &
+      types::whole_num &
       at(std::size_t index);
 
       std::size_t
       size() const;
 
-      types::Matrix
-      getCharacteristicMatrix(const types::BoundaryCondition &BC) const;
+      types::matrix
+      get_characteristic_matrix(types::boundary boundary) const;
 
-      types::Polynomial
-      getCharactersiticPolynomial(const types::BoundaryCondition &BC) const;
+      types::polynomial
+      get_charactersitic_polynomial(types::boundary boundary) const;
+
+      std::string
+      to_string() const;
   };
 }
 
