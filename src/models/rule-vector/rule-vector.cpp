@@ -45,10 +45,9 @@ get_complementable_rule_vectors(types::whole_num size, types::boundary boundary)
   models::rule_vector current_rule_vector{};
   types::polynomial current_coeffs{};
 
-  types::whole_num max_rule_vectors{static_cast<types::whole_num>(std::pow(
-    linear_rules.size(),
-    size
-  ))};
+  types::whole_num max_rule_vectors{
+    static_cast<types::whole_num>(std::pow(linear_rules.size(), size))
+  };
 
   for (types::whole_num i{}; i < max_rule_vectors; i++)
   {

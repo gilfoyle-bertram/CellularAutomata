@@ -66,7 +66,7 @@ types::whole_num
 utils::general::get_choice(const std::vector<std::string> &choices)
 {
   std::cout << decorate::underline;
-  std::cout << colors::yellow;
+  std::cout << colors::pink;
   std::cout << "\n";
   std::cout << "menu:";
   std::cout << "\n";

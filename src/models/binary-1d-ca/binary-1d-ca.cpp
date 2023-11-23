@@ -123,18 +123,17 @@ models::binary_1d_ca::get_next_config(types::whole_num current_config)
 
   std::ostringstream next_config_stream{};
 
-  std::string current_config_str{utils::number::to_binary_str(
-    current_config,
-    this->num_cells
-  )};
+  std::string current_config_str{
+    utils::number::to_binary_str(current_config, this->num_cells)
+  };
 
   for (types::whole_num i{}; i < this->num_cells; i++)
   {
     models::binary_cell &current_cell{this->cells.at(i)};
 
-    bool next_state{current_cell.next_state(
-      this->get_neighborhood_str(i, current_config_str)
-    )};
+    bool next_state{
+      current_cell.next_state(this->get_neighborhood_str(i, current_config_str))
+    };
 
     next_config_stream << static_cast<types::whole_num>(next_state);
   }
@@ -566,10 +565,9 @@ models::binary_1d_ca::print_characterisitc_polynomial() const
 void
 models::binary_1d_ca::update_config()
 {
-  std::string current_config_str{utils::number::to_binary_str(
-    this->get_current_config(),
-    this->num_cells
-  )};
+  std::string current_config_str{
+    utils::number::to_binary_str(this->get_current_config(), this->num_cells)
+  };
 
   for (types::whole_num i{}; i < this->num_cells; i++)
   {

@@ -2,6 +2,7 @@
 #define __UTILS__
 
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "../terminal/terminal.hpp"
@@ -102,11 +103,18 @@ namespace utils::polynomial
 
 namespace utils::transition_graph
 {
+  std::vector<std::unordered_set<types::whole_num>>
+  get_cycles(const types::transition_graph &graph);
+
   std::string
   to_string(const types::transition_graph &graph);
 
   void
-  print(const types::transition_graph &graph, const std::string &color = colors::cyan);
+  print(
+    const types::transition_graph &graph,
+    const std::string &cycle_color = colors::salmon,
+    const std::string &regular_color = colors::cyan
+  );
 }
 
 namespace utils::vector
