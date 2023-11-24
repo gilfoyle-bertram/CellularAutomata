@@ -88,6 +88,7 @@ models::binary_1d_ca_manager::access_system()
     "print isomorphisms",
     "check isomorphism",
     "print complemented isomorphisms",
+    "print reversed isomorphisms",
     "print characteristic matrix",
     "print characteristic polynomial",
     "go back"
@@ -141,11 +142,16 @@ models::binary_1d_ca_manager::access_system()
       }
 
       case 6: {
-        this->current_ca.print_characterisitc_matrix();
+        this->current_ca.print_reversed_isomorphisms();
         break;
       }
 
       case 7: {
+        this->current_ca.print_characterisitc_matrix();
+        break;
+      }
+
+      case 8: {
         this->current_ca.print_characterisitc_polynomial();
         break;
       }

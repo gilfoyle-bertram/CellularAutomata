@@ -108,6 +108,9 @@ namespace models
       print_complemented_isomorphisms() const;
 
       void
+      print_reversed_isomorphisms() const;
+
+      void
       print_characterisitc_matrix() const;
 
       void

@@ -3,6 +3,7 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <climits>
 #include <sstream>
 #include <stdexcept>
 #include <unordered_set>
@@ -489,11 +490,11 @@ models::binary_1d_ca::print_complemented_isomorphisms() const
 
     utils::general::print_header(headings);
 
-    for (types::whole_num i{}; i < (1 << this->num_cells); i++)
+    for (types::whole_num i{}; i < (1U << this->num_cells); i++)
     {
       types::whole_num current_cell{};
       types::whole_num current_index{i};
-      types::whole_num index_mask{static_cast<types::whole_num>((1 << this->num_cells) - 1)};
+      types::whole_num index_mask{static_cast<types::whole_num>((1U << this->num_cells) - 1)};
       types::rules current_rules{};
 
       while (index_mask)
@@ -523,6 +524,82 @@ models::binary_1d_ca::print_complemented_isomorphisms() const
   catch (const std::exception &err)
   {
     utils::general::print_msg(err.what(), colors::red);
+  }
+}
+
+void
+models::binary_1d_ca::print_reversed_isomorphisms() const
+{
+  std::vector<std::unordered_set<types::whole_num>> cycles{
+    utils::transition_graph::get_cycles(this->graph)
+  };
+
+  if (cycles.size() == 0)
+  {
+    utils::general::print_msg("no cycles to reverse", colors::yellow);
+    return;
+  }
+
+  static std::vector<std::pair<std::string, types::whole_num>> headings{
+    std::make_pair<std::string, types::whole_num>("s. no", 6),
+    std::make_pair<std::string, types::whole_num>("rules", 25)
+  };
+
+  utils::general::print_header(headings);
+
+  for (types::whole_num i{}; i < (1U << cycles.size()); i++)
+  {
+    types::transition_graph current_graph(this->num_configs, USHRT_MAX);
+    types::rules current_rules(this->num_cells, 0);
+    types::whole_num current_index{i};
+    types::whole_num current_cycle{};
+    types::whole_num index_mask{static_cast<types::whole_num>((1U << cycles.size()) - 1)};
+
+    while (index_mask)
+    {
+      if (current_index & 1)
+      {
+        for (const auto &config : cycles.at(current_cycle))
+        {
+          current_graph.at(this->graph.at(config)) = config;
+        }
+      }
+      else
+      {
+        for (const auto &config : cycles.at(current_cycle))
+        {
+          current_graph.at(config) = this->graph.at(config);
+        }
+      }
+
+      current_index >>= 1;
+      index_mask >>= 1;
+      current_cycle += 1;
+    }
+
+    for (types::whole_num i{}; i < current_graph.size(); i++)
+    {
+      if (current_graph.at(i) == USHRT_MAX)
+      {
+        current_graph.at(i) = this->graph.at(i);
+      }
+    }
+
+    std::vector<std::pair<std::string, types::whole_num>> entries{
+      std::make_pair<std::string, types::whole_num>(std::to_string(i + 1), 6),
+      std::make_pair<std::string, types::whole_num>("X", 25)
+    };
+
+    if (this->extract_rules(current_graph, current_rules))
+    {
+      entries.at(1).first = utils::vector::to_string(current_rules);
+      utils::general::print_row(entries);
+    }
+    else
+    {
+      entries.at(1).first = "invalid CA";
+      utils::general::print_row(entries);
+    }
   }
 }
 
