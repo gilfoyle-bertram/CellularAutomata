@@ -3,23 +3,23 @@
 #include <bitset>
 #include <sstream>
 
-types::whole_num
-utils::number::parse_binary_str(const std::string &txt)
+types::long_whole_num
+utils::number::parse_binary_str(const std::string &str)
 {
-  return std::stoi(txt, nullptr, 2);
+  return std::stoul(str, nullptr, 2);
 }
 
 std::string
-utils::number::to_binary_str(types::whole_num num, types::whole_num num_digits)
+utils::number::to_binary_str(types::long_whole_num num, types::short_whole_num num_digits)
 {
-  return std::bitset<16>{num}.to_string().substr(16 - num_digits);
+  return std::bitset<64>{num}.to_string().substr(64 - num_digits);
 }
 
 std::string
 utils::number::to_string(
-  types::whole_num num,
-  types::whole_num base,
-  types::whole_num num_digits
+  types::long_whole_num num,
+  types::short_whole_num base,
+  types::short_whole_num num_digits
 )
 {
   if (base > 10)
@@ -38,7 +38,7 @@ utils::number::to_string(
     num /= base;
   }
 
-  types::num padding{static_cast<types::num>(num_digits - remainders.size())};
+  types::short_num padding{static_cast<types::short_num>(num_digits - remainders.size())};
 
   if (padding < 0)
   {

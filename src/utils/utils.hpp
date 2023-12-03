@@ -1,6 +1,7 @@
 #ifndef __UTILS__
 #define __UTILS__
 
+#include <sstream>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -13,7 +14,7 @@ namespace utils::general
   bool
   get_random_bool();
 
-  types::whole_num
+  types::short_whole_num
   get_choice(const std::vector<std::string> &choices);
 
   void
@@ -21,13 +22,13 @@ namespace utils::general
 
   void
   print_header(
-    const std::vector<std::pair<std::string, types::whole_num>> &headings,
+    const std::vector<std::pair<std::string, types::short_whole_num>> &headings,
     const std::string &color = colors::cyan
   );
 
   void
   print_row(
-    const std::vector<std::pair<std::string, types::whole_num>> &entries,
+    const std::vector<std::pair<std::string, types::short_whole_num>> &entries,
     const std::string &color = colors::cyan
   );
 
@@ -59,7 +60,7 @@ namespace utils::matrix
   get_trace(const types::matrix &A);
 
   types::matrix
-  get_identity(types::whole_num size);
+  get_identity(types::short_whole_num size);
 
   types::matrix
   add(const types::matrix &A, const types::matrix &B);
@@ -68,7 +69,7 @@ namespace utils::matrix
   multiply(const types::matrix &A, const types::matrix &B);
 
   types::matrix
-  scalar_multiply(const types::matrix &A, types::num x);
+  scalar_multiply(const types::matrix &A, types::short_num x);
 
   types::polynomial
   get_characteristic_polynomial(const types::matrix &A);
@@ -82,14 +83,18 @@ namespace utils::matrix
 
 namespace utils::number
 {
-  types::whole_num
-  parse_binary_str(const std::string &txt);
+  types::long_whole_num
+  parse_binary_str(const std::string &str);
 
   std::string
-  to_binary_str(types::whole_num num, types::whole_num num_digits);
+  to_binary_str(types::long_whole_num num, types::short_whole_num num_digits);
 
   std::string
-  to_string(types::whole_num num, types::whole_num base, types::whole_num num_digits);
+  to_string(
+    types::long_whole_num num,
+    types::short_whole_num base,
+    types::short_whole_num num_digits
+  );
 }
 
 namespace utils::polynomial
@@ -103,11 +108,8 @@ namespace utils::polynomial
 
 namespace utils::transition_graph
 {
-  std::vector<std::unordered_set<types::whole_num>>
+  std::vector<std::unordered_set<types::short_whole_num>>
   get_cycles(const types::transition_graph &graph);
-
-  std::string
-  to_string(const types::transition_graph &graph);
 
   void
   print(
@@ -119,8 +121,21 @@ namespace utils::transition_graph
 
 namespace utils::vector
 {
-  std::string
-  to_string(const std::vector<types::whole_num> &nums);
+  template <typename T>
+  inline std::string
+  to_string(const std::vector<T> &nums)
+  {
+    std::ostringstream out_stream{};
+    out_stream << "[ ";
+
+    for (const auto &num : nums)
+    {
+      out_stream << num << " ";
+    }
+
+    out_stream << "]";
+    return out_stream.str();
+  }
 }
 
 #endif

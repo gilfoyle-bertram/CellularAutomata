@@ -11,20 +11,20 @@ namespace models
   {
     private:
       bool state{};
-      types::whole_num rule{};
+      types::long_whole_num rule{};
 
     public:
       bool
       get_state() const;
 
-      types::whole_num
+      types::long_whole_num
       get_rule() const;
 
       void
       set_state(bool state);
 
       void
-      set_rule(types::whole_num rule);
+      set_rule(types::long_whole_num rule);
 
       bool
       next_state(const std::string &neighborhood) const;

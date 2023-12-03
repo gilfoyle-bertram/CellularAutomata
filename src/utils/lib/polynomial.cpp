@@ -3,13 +3,11 @@
 #include <cstdlib>
 #include <sstream>
 
-// Degree of the polynomial should be less than or equal to 9.
-// Otherwise this utility function breaks.
 std::string
 utils::polynomial::to_string(const types::polynomial &coeffs)
 {
   std::ostringstream out_stream{};
-  types::num degree{static_cast<types::num>(coeffs.size() - 1)};
+  types::short_num degree{static_cast<types::short_num>(coeffs.size() - 1)};
 
   if (degree < 0)
   {
@@ -26,7 +24,7 @@ utils::polynomial::to_string(const types::polynomial &coeffs)
     return "zero polynomial";
   }
 
-  for (types::num n{degree}; n >= 0; n--)
+  for (types::short_num n{degree}; n >= 0; n--)
   {
     if (coeffs.at(n) != 0)
     {

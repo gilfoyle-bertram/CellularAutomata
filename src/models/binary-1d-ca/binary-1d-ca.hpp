@@ -14,11 +14,11 @@ namespace models
   class binary_1d_ca
   {
     private:
-      types::whole_num num_cells{};
-      types::whole_num num_neighbors{};
-      types::whole_num num_configs{};
-      types::whole_num l_radius{};
-      types::whole_num r_radius{};
+      types::short_whole_num num_cells{};
+      types::short_whole_num num_neighbors{};
+      types::short_whole_num num_configs{};
+      types::short_whole_num l_radius{};
+      types::short_whole_num r_radius{};
 
       std::vector<binary_cell> cells{};
 
@@ -35,11 +35,11 @@ namespace models
       bool
       extract_rules(const types::transition_graph &graph, types::rules &rules) const;
 
-      types::whole_num
-      get_next_config(types::whole_num current_config);
+      types::short_whole_num
+      get_next_config(types::short_whole_num current_config);
 
       std::string
-      get_neighborhood_str(types::whole_num cell_num, const std::string &config_str) const;
+      get_neighborhood_str(types::short_whole_num cell_num, const std::string &config_str) const;
 
       void
       set_rules(const types::rules &rules);
@@ -51,33 +51,35 @@ namespace models
       fill_transition_graph();
 
     public:
-      static const types::whole_num max_size{4};
+      static const types::short_whole_num max_size{10};
+      static const types::short_whole_num max_l_radius{2};
+      static const types::short_whole_num max_r_radius{2};
 
       binary_1d_ca(const binary_1d_ca &other) = delete;
 
       binary_1d_ca();
 
       binary_1d_ca(
-        types::whole_num num_cells,
-        types::whole_num l_radius,
-        types::whole_num r_radius,
+        types::short_whole_num num_cells,
+        types::short_whole_num l_radius,
+        types::short_whole_num r_radius,
         types::boundary boundary,
         const types::rules &rules
       );
 
-      types::whole_num
+      types::short_whole_num
       get_num_cells() const;
 
-      types::whole_num
+      types::short_whole_num
       get_l_radius() const;
 
-      types::whole_num
+      types::short_whole_num
       get_r_radius() const;
 
-      types::whole_num
+      types::short_whole_num
       get_num_neighbors() const;
 
-      types::whole_num
+      types::short_whole_num
       get_num_configs() const;
 
       types::boundary
@@ -89,7 +91,7 @@ namespace models
       const models::rule_vector &
       get_rule_vector() const;
 
-      types::whole_num
+      types::short_whole_num
       get_current_config() const;
 
       bool

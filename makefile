@@ -1,7 +1,7 @@
 TARGET: main
 
-main: main.o binary-cell.o binary-1d-ca.o binary-1d-ca-manager.o rule-vector.o utils.general.o utils.math.o utils.matrix.o utils.number.o utils.polynomial.o utils.transition-graph.o utils.vector.o
-	g++ main.o binary-cell.o binary-1d-ca.o binary-1d-ca-manager.o rule-vector.o utils.general.o utils.math.o utils.matrix.o utils.number.o utils.polynomial.o utils.transition-graph.o utils.vector.o -o main -fopenmp
+main: main.o binary-cell.o binary-1d-ca.o binary-1d-ca-manager.o rule-vector.o utils.general.o utils.math.o utils.matrix.o utils.number.o utils.polynomial.o utils.transition-graph.o
+	g++ main.o binary-cell.o binary-1d-ca.o binary-1d-ca-manager.o rule-vector.o utils.general.o utils.math.o utils.matrix.o utils.number.o utils.polynomial.o utils.transition-graph.o -o main -fopenmp
 
 main.o: src/main.cpp
 	g++ -c src/main.cpp -o main.o
@@ -35,9 +35,6 @@ utils.polynomial.o: src/utils/lib/polynomial.cpp
 
 utils.transition-graph.o: src/utils/lib/transition-graph.cpp
 	g++ -c src/utils/lib/transition-graph.cpp -o utils.transition-graph.o
-
-utils.vector.o: src/utils/lib/vector.cpp
-	g++ -c src/utils/lib/vector.cpp -o utils.vector.o
 
 clean:
 	rm -f main

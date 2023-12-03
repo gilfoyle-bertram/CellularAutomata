@@ -6,7 +6,7 @@
 #include <sstream>
 
 static std::string
-get_border(const std::vector<std::pair<std::string, types::whole_num>> &entries)
+get_border(const std::vector<std::pair<std::string, types::short_whole_num>> &entries)
 {
   std::ostringstream out_stream{};
 
@@ -22,7 +22,7 @@ get_border(const std::vector<std::pair<std::string, types::whole_num>> &entries)
 }
 
 static std::string
-get_content(const std::vector<std::pair<std::string, types::whole_num>> &entries)
+get_content(const std::vector<std::pair<std::string, types::short_whole_num>> &entries)
 {
   std::ostringstream out_stream{};
 
@@ -37,10 +37,10 @@ get_content(const std::vector<std::pair<std::string, types::whole_num>> &entries
   return out_stream.str();
 }
 
-static types::whole_num
-read_choice(types::whole_num low, types::whole_num high)
+static types::short_whole_num
+read_choice(types::short_whole_num low, types::short_whole_num high)
 {
-  types::whole_num value{};
+  types::short_whole_num value{};
 
   std::cout << "\n";
   std::cout << "enter number in range " << low << " - " << high << ": ";
@@ -62,7 +62,7 @@ utils::general::get_random_bool()
   return rand() % 2 == 0;
 }
 
-types::whole_num
+types::short_whole_num
 utils::general::get_choice(const std::vector<std::string> &choices)
 {
   std::cout << decorate::underline;
@@ -73,7 +73,7 @@ utils::general::get_choice(const std::vector<std::string> &choices)
   std::cout << colors::reset;
   std::cout << decorate::reset;
 
-  for (types::whole_num i{}; i < choices.size(); i++)
+  for (types::short_whole_num i{}; i < choices.size(); i++)
   {
     std::cout << "  " << (i + 1) << ") " << choices.at(i) << "\n";
   }
@@ -89,7 +89,7 @@ utils::general::initialize()
 
 void
 utils::general::print_header(
-  const std::vector<std::pair<std::string, types::whole_num>> &headings,
+  const std::vector<std::pair<std::string, types::short_whole_num>> &headings,
   const std::string &color
 )
 {
@@ -109,7 +109,7 @@ utils::general::print_header(
 
 void
 utils::general::print_row(
-  const std::vector<std::pair<std::string, types::whole_num>> &entries,
+  const std::vector<std::pair<std::string, types::short_whole_num>> &entries,
   const std::string &color
 )
 {

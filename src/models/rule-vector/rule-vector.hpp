@@ -16,9 +16,6 @@ namespace models
       is_additive() const;
 
     public:
-      static bool
-      is_complementable(const types::polynomial &coeffs);
-
       static void
       print_complementable_rule_vectors();
 
@@ -29,10 +26,10 @@ namespace models
       bool
       is_complementable(types::boundary boundary) const;
 
-      types::whole_num
+      types::long_whole_num
       at(std::size_t index) const;
 
-      types::whole_num &
+      types::long_whole_num &
       at(std::size_t index);
 
       std::size_t

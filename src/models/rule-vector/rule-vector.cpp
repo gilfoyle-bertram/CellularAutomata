@@ -14,35 +14,59 @@
 // These rules work only on ECAs.
 static types::rules linear_rules{60, 90, 102, 150, 170, 204, 240};
 
-// These rules work only on ECAs.
+// These rule dependencies work only on ECAs.
 // So they assume that a cell depends on its immediate left and right cells, along with itself.
 // Left neighbor is encoded as -1.
 // The cell itself is encoded as 0.
 // Right neighbor is encoded as 1.
-static std::unordered_map<types::whole_num, std::unordered_set<types::num>> additive_rule_deps{
-  std::make_pair<types::whole_num, std::unordered_set<types::num>>(60, {-1, 0}),
-  std::make_pair<types::whole_num, std::unordered_set<types::num>>(90, {-1, 1}),
-  std::make_pair<types::whole_num, std::unordered_set<types::num>>(102, {0, 1}),
-  std::make_pair<types::whole_num, std::unordered_set<types::num>>(150, {-1, 0, 1}),
-  std::make_pair<types::whole_num, std::unordered_set<types::num>>(170, {1}),
-  std::make_pair<types::whole_num, std::unordered_set<types::num>>(204, {0}),
-  std::make_pair<types::whole_num, std::unordered_set<types::num>>(240, {-1}),
+static std::unordered_map<types::long_whole_num, std::unordered_set<types::short_num>> additive_rule_deps{
+  std::make_pair<types::long_whole_num, std::unordered_set<types::short_num>>(60, {-1, 0}),
+  std::make_pair<types::long_whole_num, std::unordered_set<types::short_num>>(90, {-1, 1}),
+  std::make_pair<types::long_whole_num, std::unordered_set<types::short_num>>(102, {0, 1}),
+  std::make_pair<types::long_whole_num, std::unordered_set<types::short_num>>(150, {-1, 0, 1}),
+  std::make_pair<types::long_whole_num, std::unordered_set<types::short_num>>(170, {1}),
+  std::make_pair<types::long_whole_num, std::unordered_set<types::short_num>>(204, {0}),
+  std::make_pair<types::long_whole_num, std::unordered_set<types::short_num>>(240, {-1}),
 
-  std::make_pair<types::whole_num, std::unordered_set<types::num>>(195, {-1, 0}),
-  std::make_pair<types::whole_num, std::unordered_set<types::num>>(165, {-1, 1}),
-  std::make_pair<types::whole_num, std::unordered_set<types::num>>(153, {0, 1}),
-  std::make_pair<types::whole_num, std::unordered_set<types::num>>(105, {-1, 0, 1}),
-  std::make_pair<types::whole_num, std::unordered_set<types::num>>(85, {1}),
-  std::make_pair<types::whole_num, std::unordered_set<types::num>>(51, {0}),
-  std::make_pair<types::whole_num, std::unordered_set<types::num>>(15, {-1})
+  std::make_pair<types::long_whole_num, std::unordered_set<types::short_num>>(195, {-1, 0}),
+  std::make_pair<types::long_whole_num, std::unordered_set<types::short_num>>(165, {-1, 1}),
+  std::make_pair<types::long_whole_num, std::unordered_set<types::short_num>>(153, {0, 1}),
+  std::make_pair<types::long_whole_num, std::unordered_set<types::short_num>>(105, {-1, 0, 1}),
+  std::make_pair<types::long_whole_num, std::unordered_set<types::short_num>>(85, {1}),
+  std::make_pair<types::long_whole_num, std::unordered_set<types::short_num>>(51, {0}),
+  std::make_pair<types::long_whole_num, std::unordered_set<types::short_num>>(15, {-1})
 };
 
+static bool
+is_complementable_polynomial(const types::polynomial &coeffs)
+{
+  types::short_whole_num value_at_1{};
+
+  for (types::short_whole_num i{}; i < coeffs.size(); i++)
+  {
+    value_at_1 += coeffs.at(i);
+  }
+
+  if (utils::math::is_even(value_at_1))
+  {
+    value_at_1 = 0;
+  }
+  else
+  {
+    value_at_1 = 1;
+  }
+
+  return value_at_1 == 0 ? false : true;
+}
+
 static std::vector<std::pair<models::rule_vector, types::polynomial>>
-get_complementable_rule_vectors(types::whole_num size, types::boundary boundary)
+get_complementable_rule_vectors(types::short_whole_num size, types::boundary boundary)
 {
   std::vector<std::pair<models::rule_vector, types::polynomial>> result{};
+
   types::rules current_rules(size, 0);
   models::rule_vector current_rule_vector{};
+
   types::polynomial current_coeffs{};
 
   types::whole_num max_rule_vectors{
@@ -53,7 +77,7 @@ get_complementable_rule_vectors(types::whole_num size, types::boundary boundary)
   {
     std::string current_mask{utils::number::to_string(i, linear_rules.size(), size)};
 
-    for (types::whole_num j{}; j < size; j++)
+    for (types::short_whole_num j{}; j < size; j++)
     {
       current_rules.at(j) = linear_rules.at(current_mask.at(j) - '0');
     }
@@ -61,12 +85,13 @@ get_complementable_rule_vectors(types::whole_num size, types::boundary boundary)
     current_rule_vector = models::rule_vector{current_rules};
     current_coeffs = current_rule_vector.get_charactersitic_polynomial(boundary);
 
-    if (models::rule_vector::is_complementable(current_coeffs))
+    if (is_complementable_polynomial(current_coeffs))
     {
-      result.push_back(std::make_pair<models::rule_vector &, types::polynomial &>(
-        current_rule_vector,
-        current_coeffs
-      ));
+      result.push_back(
+        std::make_pair<models::rule_vector &, types::polynomial &>(
+          current_rule_vector, current_coeffs
+        )
+      );
     }
   }
 
@@ -87,38 +112,10 @@ models::rule_vector::is_additive() const
   return true;
 }
 
-bool
-models::rule_vector::is_complementable(const types::polynomial &coeffs)
-{
-  types::num value_at_1{};
-
-  for (types::whole_num i{}; i < coeffs.size(); i++)
-  {
-    value_at_1 += coeffs.at(i);
-  }
-
-  if (utils::math::is_even(value_at_1))
-  {
-    value_at_1 = 0;
-  }
-  else
-  {
-    value_at_1 = 1;
-  }
-
-  return value_at_1 == 0 ? false : true;
-}
-
 void
 models::rule_vector::print_complementable_rule_vectors()
 {
-  static std::vector<std::pair<std::string, types::whole_num>> headings{
-    std::make_pair<std::string, types::whole_num>("s. no", 6),
-    std::make_pair<std::string, types::whole_num>("rules", 25),
-    std::make_pair<std::string, types::whole_num>("polynomial", 25),
-  };
-
-  types::whole_num num_cells{};
+  types::short_whole_num num_cells{};
   types::whole_num counter{};
 
   std::cout << "\n";
@@ -139,15 +136,38 @@ models::rule_vector::print_complementable_rule_vectors()
 
   if (!result.empty())
   {
+    std::vector<std::pair<std::string, types::short_whole_num>> headings{
+      std::make_pair<std::string, types::short_whole_num>(
+        "s. no", 7
+      ),
+      std::make_pair<std::string, types::short_whole_num>(
+        "rules", std::max(num_cells * 6, 24)
+      ),
+      std::make_pair<std::string, types::short_whole_num>(
+        "polynomial", std::max(num_cells * 6, 24)
+      ),
+    };
+
     utils::general::print_header(headings);
+  }
+  else
+  {
+    utils::general::print_msg("no complementable linear ECAs", colors::blue);
+    return;
   }
 
   for (const auto &pair : result)
   {
-    std::vector<std::pair<std::string, types::whole_num>> entries{
-      std::make_pair<std::string, types::whole_num>(std::to_string(++counter), 6),
-      std::make_pair<std::string, types::whole_num>(pair.first.to_string(), 25),
-      std::make_pair<std::string, types::whole_num>(utils::polynomial::to_string(pair.second), 25),
+    std::vector<std::pair<std::string, types::short_whole_num>> entries{
+      std::make_pair<std::string, types::short_whole_num>(
+        std::to_string(++counter), 7
+      ),
+      std::make_pair<std::string, types::short_whole_num>(
+        pair.first.to_string(), std::max(num_cells * 6, 24)
+      ),
+      std::make_pair<std::string, types::short_whole_num>(
+        utils::polynomial::to_string(pair.second), std::max(num_cells * 6, 24)
+      ),
     };
 
     utils::general::print_row(entries);
@@ -181,16 +201,16 @@ bool
 models::rule_vector::is_complementable(types::boundary boundary) const
 {
   types::polynomial coeffs{this->get_charactersitic_polynomial(boundary)};
-  return models::rule_vector::is_complementable(coeffs);
+  return is_complementable_polynomial(coeffs);
 }
 
-types::whole_num
+types::long_whole_num
 models::rule_vector::at(std::size_t index) const
 {
   return this->rules.at(index);
 }
 
-types::whole_num &
+types::long_whole_num &
 models::rule_vector::at(std::size_t index)
 {
   return this->rules.at(index);
@@ -214,15 +234,15 @@ models::rule_vector::get_characteristic_matrix(types::boundary boundary) const
 
   bool is_null_boundary{boundary == types::boundary::null};
   types::matrix M{};
-  types::whole_num size{static_cast<types::whole_num>(this->size())};
+  types::short_whole_num size{static_cast<types::short_whole_num>(this->size())};
   M.resize(size);
 
-  for (types::whole_num i{}; i < size; i++)
+  for (types::short_whole_num i{}; i < size; i++)
   {
     M.at(i).resize(size);
 
-    types::whole_num current_rule{this->rules.at(i)};
-    std::unordered_set<types::num> current_rule_deps{additive_rule_deps.at(current_rule)};
+    types::long_whole_num current_rule{this->rules.at(i)};
+    std::unordered_set<types::short_num> current_rule_deps{additive_rule_deps.at(current_rule)};
 
     if (current_rule_deps.count(-1))
     {

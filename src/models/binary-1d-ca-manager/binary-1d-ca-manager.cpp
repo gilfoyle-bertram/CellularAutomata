@@ -8,14 +8,14 @@
 #include "../../utils/utils.hpp"
 
 static types::rules
-read_rules(types::whole_num num_rules)
+read_rules(types::short_whole_num num_rules)
 {
-  types::whole_num rule{};
+  types::long_whole_num rule{};
   types::rules rules(num_rules, 0);
 
   std::cout << "\n";
 
-  for (types::whole_num i{0}; i < num_rules; ++i)
+  for (types::short_whole_num i{0}; i < num_rules; ++i)
   {
     std::cout << "rule for cell-" << (i + 1) << ": ";
     std::cin >> rule;
@@ -54,10 +54,9 @@ models::binary_1d_ca_manager::read_boundary()
 void
 models::binary_1d_ca_manager::read_ca_details()
 {
-  types::whole_num num_cells{};
-  types::whole_num l_radius{};
-  types::whole_num r_radius{};
-  types::whole_num rule{};
+  types::short_whole_num num_cells{};
+  types::short_whole_num l_radius{};
+  types::short_whole_num r_radius{};
 
   std::cout << "\n";
 
@@ -96,7 +95,7 @@ models::binary_1d_ca_manager::access_system()
 
   while (run_system)
   {
-    types::whole_num choice{utils::general::get_choice(choices)};
+    types::short_whole_num choice{utils::general::get_choice(choices)};
 
     switch (choice)
     {
@@ -116,9 +115,9 @@ models::binary_1d_ca_manager::access_system()
       }
 
       case 4: {
-        types::whole_num num_cells{this->current_ca.get_num_cells()};
-        types::whole_num l_radius{this->current_ca.get_l_radius()};
-        types::whole_num r_radius{this->current_ca.get_r_radius()};
+        types::short_whole_num num_cells{this->current_ca.get_num_cells()};
+        types::short_whole_num l_radius{this->current_ca.get_l_radius()};
+        types::short_whole_num r_radius{this->current_ca.get_r_radius()};
         types::boundary boundary{this->current_ca.get_boundary()};
         types::rules rules{read_rules(num_cells)};
 

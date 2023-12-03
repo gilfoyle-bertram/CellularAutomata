@@ -5,15 +5,16 @@
 
 // For a transition graph, a node can be in maximum of one cycle only.
 // This is because the out-degree of any node is exactly 1.
-std::vector<std::unordered_set<types::whole_num>>
+std::vector<std::unordered_set<types::short_whole_num>>
 utils::transition_graph::get_cycles(const types::transition_graph &graph)
 {
-  types::whole_num current_node{};
-  std::unordered_set<types::whole_num> visited_nodes{};
-  std::unordered_set<types::whole_num> cycled_nodes{};
-  std::vector<std::unordered_set<types::whole_num>> cycles{};
+  types::short_whole_num current_node{};
 
-  for (types::whole_num i{}; i < graph.size(); i++)
+  std::unordered_set<types::short_whole_num> visited_nodes{};
+  std::unordered_set<types::short_whole_num> cycled_nodes{};
+  std::vector<std::unordered_set<types::short_whole_num>> cycles{};
+
+  for (types::short_whole_num i{}; i < graph.size(); i++)
   {
     while (true)
     {
@@ -25,8 +26,8 @@ utils::transition_graph::get_cycles(const types::transition_graph &graph)
 
       if (visited_nodes.find(current_node) != visited_nodes.end())
       {
-        std::unordered_set<types::whole_num> current_cycle{};
-        types::whole_num start_node{current_node};
+        std::unordered_set<types::short_whole_num> current_cycle{};
+        types::short_whole_num start_node{current_node};
 
         bool is_cycle{true};
         current_cycle.insert(start_node);
@@ -64,48 +65,6 @@ utils::transition_graph::get_cycles(const types::transition_graph &graph)
   return cycles;
 }
 
-std::string
-utils::transition_graph::to_string(const types::transition_graph &graph)
-{
-  bool is_new_component{true};
-  bool is_first_component{true};
-
-  types::whole_num current_node{};
-  std::unordered_set<types::whole_num> visited_nodes{};
-  std::ostringstream out_stream{};
-
-  for (types::whole_num i{}; i < graph.size(); i++)
-  {
-    while (true)
-    {
-      if (visited_nodes.find(current_node) != visited_nodes.end())
-      {
-        current_node = i + 1;
-        is_new_component = true;
-
-        break;
-      }
-
-      if (is_new_component)
-      {
-        out_stream << (is_first_component ? "" : "\n");
-        out_stream << current_node;
-
-        is_first_component = false;
-      }
-
-      out_stream << " --> ";
-      out_stream << graph.at(current_node);
-
-      visited_nodes.insert(current_node);
-      current_node = graph.at(current_node);
-      is_new_component = false;
-    }
-  }
-
-  return out_stream.str();
-}
-
 void
 utils::transition_graph::print(
   const types::transition_graph &graph,
@@ -116,19 +75,19 @@ utils::transition_graph::print(
   std::ostringstream out_stream{};
   bool is_first_cycle{true};
 
-  std::vector<std::unordered_set<types::whole_num>> cycles{
+  std::vector<std::unordered_set<types::short_whole_num>> cycles{
     utils::transition_graph::get_cycles(graph)
   };
 
-  std::unordered_set<types::whole_num> visited_nodes{};
+  std::unordered_set<types::short_whole_num> visited_nodes{};
 
   for (const auto &cycle : cycles)
   {
     out_stream << cycle_color;
     out_stream << (is_first_cycle ? "" : "\n");
 
-    types::whole_num start_node{*cycle.begin()};
-    types::whole_num current_node{start_node};
+    types::short_whole_num start_node{*cycle.begin()};
+    types::short_whole_num current_node{start_node};
 
     visited_nodes.insert(current_node);
 
@@ -150,9 +109,9 @@ utils::transition_graph::print(
   }
 
   bool is_new_component{true};
-  types::whole_num current_node{};
+  types::short_whole_num current_node{};
 
-  for (types::whole_num i{}; i < graph.size(); i++)
+  for (types::short_whole_num i{}; i < graph.size(); i++)
   {
     while (true)
     {
