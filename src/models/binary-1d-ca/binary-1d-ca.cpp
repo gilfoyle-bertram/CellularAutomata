@@ -364,12 +364,12 @@ models::binary_1d_ca::is_isomorphic(models::binary_1d_ca &other) const
     this_permutation.push_back(i);
   }
 
-#pragma omp parallel
+  #pragma omp parallel
   {
     types::transition_graph local_graph(this->num_configs, 0);
     std::vector<types::short_whole_num> local_permutation{this_permutation};
 
-#pragma omp for
+    #pragma omp for
     for (types::short_whole_num i = 0; i < this->num_configs; i++)
     {
       if (is_isomorphic)
@@ -396,9 +396,9 @@ models::binary_1d_ca::is_isomorphic(models::binary_1d_ca &other) const
           local_graph.at(current_config) = local_permutation.at(this_graph.at(j));
         }
 
-#pragma omp critical
+        if (local_graph == other_graph)
         {
-          if (local_graph == other_graph)
+          #pragma omp critical
           {
             is_isomorphic = true;
           }
@@ -435,13 +435,13 @@ models::binary_1d_ca::print_isomorphisms() const
 
   utils::general::print_header(headings);
 
-#pragma omp parallel
+  #pragma omp parallel
   {
     types::transition_graph local_graph(this->num_configs, 0);
     types::rules local_rules(this->num_cells, 0);
     std::vector<types::short_whole_num> local_permutation{this_permutation};
 
-#pragma omp for
+    #pragma omp for
     for (types::short_whole_num i = 0; i < this->num_configs; i++)
     {
       std::rotate(
@@ -460,9 +460,9 @@ models::binary_1d_ca::print_isomorphisms() const
 
         bool is_valid_ca{this->extract_rules(local_graph, local_rules)};
 
-#pragma omp critical
+        if (is_valid_ca)
         {
-          if (is_valid_ca)
+          #pragma omp critical
           {
             std::string rules_str{
               utils::vector::to_string<types::long_whole_num>(local_rules)

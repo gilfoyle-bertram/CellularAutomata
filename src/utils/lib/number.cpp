@@ -24,7 +24,7 @@ utils::number::to_string(
 {
   if (base > 10)
   {
-    throw std::invalid_argument("unsupported base for conversion");
+    throw std::invalid_argument{"unsupported base for conversion"};
   }
 
   static std::string symbols{"0123456789"};
@@ -42,7 +42,7 @@ utils::number::to_string(
 
   if (padding < 0)
   {
-    throw std::overflow_error{("base conversion failed due to overflow")};
+    throw std::overflow_error{"base conversion failed due to overflow"};
   }
 
   out_stream << std::string(padding, '0');

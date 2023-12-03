@@ -16,7 +16,7 @@ binary-1d-ca-manager.o: src/models/binary-1d-ca-manager/binary-1d-ca-manager.cpp
 	g++ -c src/models/binary-1d-ca-manager/binary-1d-ca-manager.cpp -o binary-1d-ca-manager.o
 
 rule-vector.o: src/models/rule-vector/rule-vector.cpp
-	g++ -c src/models/rule-vector/rule-vector.cpp -o rule-vector.o
+	g++ -c src/models/rule-vector/rule-vector.cpp -o rule-vector.o -fopenmp
 
 utils.general.o: src/utils/lib/general.cpp
 	g++ -c src/utils/lib/general.cpp -o utils.general.o

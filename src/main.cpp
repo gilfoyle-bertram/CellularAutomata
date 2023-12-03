@@ -31,7 +31,7 @@ class controller
       {
         try
         {
-          types::whole_num choice{utils::general::get_choice(choices)};
+          types::short_whole_num choice{utils::general::get_choice(choices)};
 
           switch (choice)
           {

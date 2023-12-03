@@ -1,5 +1,7 @@
 #include "rule-vector.hpp"
 
+#include <omp.h>
+
 #include <cmath>
 #include <iostream>
 #include <sstream>
@@ -64,34 +66,38 @@ get_complementable_rule_vectors(types::short_whole_num size, types::boundary bou
 {
   std::vector<std::pair<models::rule_vector, types::polynomial>> result{};
 
-  types::rules current_rules(size, 0);
-  models::rule_vector current_rule_vector{};
-
-  types::polynomial current_coeffs{};
-
   types::whole_num max_rule_vectors{
     static_cast<types::whole_num>(std::pow(linear_rules.size(), size))
   };
 
-  for (types::whole_num i{}; i < max_rule_vectors; i++)
+  #pragma omp parallel
   {
-    std::string current_mask{utils::number::to_string(i, linear_rules.size(), size)};
+    types::rules current_rules(size, 0);
+    models::rule_vector current_rule_vector{};
+    types::polynomial current_coeffs{};
 
-    for (types::short_whole_num j{}; j < size; j++)
+    #pragma omp for
+    for (types::whole_num i = 0; i < max_rule_vectors; i++)
     {
-      current_rules.at(j) = linear_rules.at(current_mask.at(j) - '0');
-    }
+      std::string current_mask{utils::number::to_string(i, linear_rules.size(), size)};
 
-    current_rule_vector = models::rule_vector{current_rules};
-    current_coeffs = current_rule_vector.get_charactersitic_polynomial(boundary);
+      for (types::short_whole_num j{}; j < size; j++)
+      {
+        current_rules.at(j) = linear_rules.at(current_mask.at(j) - '0');
+      }
 
-    if (is_complementable_polynomial(current_coeffs))
-    {
-      result.push_back(
-        std::make_pair<models::rule_vector &, types::polynomial &>(
-          current_rule_vector, current_coeffs
-        )
-      );
+      current_rule_vector = models::rule_vector{current_rules};
+      current_coeffs = current_rule_vector.get_charactersitic_polynomial(boundary);
+
+      if (is_complementable_polynomial(current_coeffs))
+      {
+        #pragma omp critical
+        {
+          result.push_back(std::make_pair<models::rule_vector &, types::polynomial &>(
+            current_rule_vector, current_coeffs
+          ));
+        }
+      }
     }
   }
 
