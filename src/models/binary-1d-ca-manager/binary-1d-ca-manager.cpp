@@ -7,23 +7,31 @@
 #include "../../terminal/terminal.hpp"
 #include "../../utils/utils.hpp"
 
-static types::rules
-read_rules(types::short_whole_num num_rules)
+static void
+fill_random_eca_rules(types::rules &rules)
 {
-  types::long_whole_num rule{};
-  types::rules rules(num_rules, 0);
+  for (auto &rule : rules)
+  {
+    rule = utils::number::get_random_num(0, 255);
+  }
+}
+
+types::short_whole_num
+models::binary_1d_ca_manager::read_num_cells()
+{
+  types::short_whole_num num_cells{};
 
   std::cout << "\n";
 
-  for (types::short_whole_num i{0}; i < num_rules; ++i)
-  {
-    std::cout << "rule for cell-" << (i + 1) << ": ";
-    std::cin >> rule;
+  std::cout << "no. of cells (max: " << (models::binary_1d_ca::max_size) << " cells): ";
+  std::cin >> num_cells;
 
-    rules.at(i) = rule;
+  if (num_cells > models::binary_1d_ca::max_size)
+  {
+    throw std::invalid_argument{"unsupported cellular automata size"};
   }
 
-  return rules;
+  return num_cells;
 }
 
 types::boundary
@@ -51,17 +59,85 @@ models::binary_1d_ca_manager::read_boundary()
   return read_boundary();
 }
 
-void
-models::binary_1d_ca_manager::read_ca_details()
+types::rules
+models::binary_1d_ca_manager::read_rules(types::short_whole_num num_rules)
 {
-  types::short_whole_num num_cells{};
-  types::short_whole_num l_radius{};
-  types::short_whole_num r_radius{};
+  types::long_whole_num rule{};
+  types::rules rules(num_rules, 0);
 
   std::cout << "\n";
 
-  std::cout << "no. of cells (max: " << (models::binary_1d_ca::max_size) << " cells): ";
-  std::cin >> num_cells;
+  for (types::short_whole_num i{0}; i < num_rules; ++i)
+  {
+    std::cout << "rule for cell-" << (i + 1) << ": ";
+    std::cin >> rule;
+
+    rules.at(i) = rule;
+  }
+
+  return rules;
+}
+
+void
+models::binary_1d_ca_manager::print_reversed_isomorphable_ecas()
+{
+  types::short_whole_num counter{};
+  types::short_whole_num num_cells{models::binary_1d_ca_manager::read_num_cells()};
+  types::boundary boundary{models::binary_1d_ca_manager::read_boundary()};
+
+  bool header_printed{};
+  types::rules current_rules(num_cells, 0);
+  models::binary_1d_ca current_ca{};
+
+  std::vector<std::pair<std::string, types::short_whole_num>> headings{
+    std::make_pair<std::string, types::short_whole_num>(
+      "s. no", 7
+    ),
+    std::make_pair<std::string, types::short_whole_num>(
+      "rules", std::max(num_cells * 6, 24)
+    )
+  };
+
+  for (types::short_whole_num i{}; i < 1000; i++)
+  {
+    fill_random_eca_rules(current_rules);
+    current_ca = models::binary_1d_ca(num_cells, 1, 1, boundary, current_rules);
+
+    if (current_ca.has_non_trivial_reversed_isomorphisms())
+    {
+      if (!header_printed)
+      {
+        utils::general::print_header(headings);
+        header_printed = true;
+      }
+
+      std::vector<std::pair<std::string, types::short_whole_num>> entries{
+        std::make_pair<std::string, types::short_whole_num>(
+          std::to_string(++counter), 7
+        ),
+        std::make_pair<std::string, types::short_whole_num>(
+          utils::vector::to_string<types::long_whole_num>(current_rules),
+          std::max(num_cells * 6, 24)
+        )
+      };
+
+      utils::general::print_row(entries);
+    }
+  }
+
+  if (!header_printed)
+  {
+    utils::general::print_msg("couldn't generate any required ECAs", colors::blue);
+  }
+}
+
+void
+models::binary_1d_ca_manager::read_ca_details()
+{
+  types::short_whole_num num_cells{models::binary_1d_ca_manager::read_num_cells()};
+
+  types::short_whole_num l_radius{};
+  types::short_whole_num r_radius{};
 
   std::cout << "left radius: ";
   std::cin >> l_radius;
@@ -69,8 +145,8 @@ models::binary_1d_ca_manager::read_ca_details()
   std::cout << "right radius: ";
   std::cin >> r_radius;
 
-  types::boundary boundary{read_boundary()};
-  types::rules rules{read_rules(num_cells)};
+  types::boundary boundary{models::binary_1d_ca_manager::read_boundary()};
+  types::rules rules{models::binary_1d_ca_manager::read_rules(num_cells)};
 
   this->current_ca = models::binary_1d_ca{num_cells, l_radius, r_radius, boundary, rules};
 }

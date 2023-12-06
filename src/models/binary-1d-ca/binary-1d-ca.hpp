@@ -97,6 +97,9 @@ namespace models
       bool
       is_isomorphic(models::binary_1d_ca &other) const;
 
+      bool
+      has_non_trivial_reversed_isomorphisms() const;
+
       void
       print_isomorphisms() const;
 

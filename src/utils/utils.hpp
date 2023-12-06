@@ -83,6 +83,9 @@ namespace utils::matrix
 
 namespace utils::number
 {
+  types::short_whole_num
+  get_random_num(types::short_whole_num min, types::short_whole_num max);
+
   types::long_whole_num
   parse_binary_str(const std::string &str);
 

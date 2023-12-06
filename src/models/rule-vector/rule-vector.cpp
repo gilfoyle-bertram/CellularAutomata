@@ -121,19 +121,9 @@ models::rule_vector::is_additive() const
 void
 models::rule_vector::print_complementable_rule_vectors()
 {
-  types::short_whole_num num_cells{};
   types::whole_num counter{};
 
-  std::cout << "\n";
-  std::cout << "no. of cells (max: " << (models::binary_1d_ca::max_size) << " cells): ";
-
-  std::cin >> num_cells;
-
-  if (num_cells > models::binary_1d_ca::max_size)
-  {
-    throw std::invalid_argument{"unsupported cellular automata size"};
-  }
-
+  types::short_whole_num num_cells{models::binary_1d_ca_manager::read_num_cells()};
   types::boundary boundary{models::binary_1d_ca_manager::read_boundary()};
 
   std::vector<std::pair<models::rule_vector, types::polynomial>> result{
@@ -294,5 +284,5 @@ models::rule_vector::get_charactersitic_polynomial(types::boundary boundary) con
 std::string
 models::rule_vector::to_string() const
 {
-  return utils::vector::to_string(this->rules);
+  return utils::vector::to_string<types::long_whole_num>(this->rules);
 }

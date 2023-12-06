@@ -12,8 +12,17 @@ namespace models
       models::binary_1d_ca current_ca{};
 
     public:
+      static types::short_whole_num
+      read_num_cells();
+
       static types::boundary
       read_boundary();
+
+      static types::rules
+      read_rules(types::short_whole_num num_rules);
+
+      static void
+      print_reversed_isomorphable_ecas();
 
       void
       read_ca_details();

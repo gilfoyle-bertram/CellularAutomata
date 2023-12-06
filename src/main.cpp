@@ -23,6 +23,7 @@ class controller
 
       static std::vector<std::string> choices{
         "print complementable linear ECAs",
+        "print random ECAs with non-trivial reversed isomorphisms",
         "feed CA details manually",
         "exit"
       };
@@ -40,6 +41,10 @@ class controller
               break;
 
             case 2:
+              models::binary_1d_ca_manager::print_reversed_isomorphable_ecas();
+              break;
+
+            case 3:
               this->ca_manager.access_system();
               break;
 

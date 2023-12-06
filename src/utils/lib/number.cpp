@@ -3,6 +3,19 @@
 #include <bitset>
 #include <sstream>
 
+types::short_whole_num
+utils::number::get_random_num(types::short_whole_num min, types::short_whole_num max)
+{
+  if (min >= max)
+  {
+    throw std::invalid_argument{"invalid range for random number generation"};
+  }
+
+  types::short_whole_num range{static_cast<types::short_whole_num>(max - min + 1)};
+
+  return rand() % range + min;
+}
+
 types::long_whole_num
 utils::number::parse_binary_str(const std::string &str)
 {

@@ -412,6 +412,85 @@ models::binary_1d_ca::is_isomorphic(models::binary_1d_ca &other) const
   return is_isomorphic;
 }
 
+bool
+models::binary_1d_ca::has_non_trivial_reversed_isomorphisms() const
+{
+  std::vector<std::unordered_set<types::short_whole_num>> cycles{
+    utils::transition_graph::get_cycles(this->graph)
+  };
+
+  if (cycles.size() == 0)
+  {
+    return false;
+  }
+
+  // The currently allowed maximum cellular automaton size is 10.
+  // This means the transition graph will have a maximum of 2^10 = 1024 nodes.
+  // In the worst case, each node can have a self-loop, giving us 1024 cycles.
+  // In such a case, how to store (1UL << 1024) ?
+  for (types::long_whole_num i{}; i < (1UL << cycles.size()); i++)
+  {
+    bool is_non_trivial{};
+
+    types::transition_graph current_graph(this->num_configs, USHRT_MAX);
+    types::rules current_rules(this->num_cells, 0);
+
+    types::long_whole_num current_index{i};
+    types::short_whole_num current_cycle{};
+
+    types::long_whole_num index_mask{
+      static_cast<types::long_whole_num>((1UL << cycles.size()) - 1)
+    };
+
+    while (index_mask)
+    {
+      if (current_index & 1)
+      {
+        for (const auto &config : cycles.at(current_cycle))
+        {
+          current_graph.at(this->graph.at(config)) = config;
+        }
+
+        if (cycles.at(current_cycle).size() > 2)
+        {
+          is_non_trivial = true;
+        }
+      }
+      else
+      {
+        for (const auto &config : cycles.at(current_cycle))
+        {
+          current_graph.at(config) = this->graph.at(config);
+        }
+      }
+
+      current_index >>= 1;
+      index_mask >>= 1;
+      current_cycle += 1;
+    }
+
+    if (!is_non_trivial)
+    {
+      continue;
+    }
+
+    for (types::short_whole_num i{}; i < current_graph.size(); i++)
+    {
+      if (current_graph.at(i) == USHRT_MAX)
+      {
+        current_graph.at(i) = this->graph.at(i);
+      }
+    }
+
+    if (this->extract_rules(current_graph, current_rules))
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void
 models::binary_1d_ca::print_isomorphisms() const
 {
