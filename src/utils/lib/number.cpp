@@ -6,9 +6,14 @@
 types::short_whole_num
 utils::number::get_random_num(types::short_whole_num min, types::short_whole_num max)
 {
-  if (min >= max)
+  if (min > max)
   {
     throw std::invalid_argument{"invalid range for random number generation"};
+  }
+
+  if (min == max)
+  {
+    return min;
   }
 
   types::short_whole_num range{static_cast<types::short_whole_num>(max - min + 1)};

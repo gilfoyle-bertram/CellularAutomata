@@ -32,6 +32,8 @@ namespace types
   // By exploiting this property, we can represent its transition graph as a 1D array.
   // So `graph[i] = j`, means there is an edge from node i to node j.
   using transition_graph = std::vector<short_whole_num>;
+
+  using rules_group = std::pair<types::rules, types::short_whole_num>;
 }
 
 #endif

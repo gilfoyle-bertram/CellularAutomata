@@ -6,15 +6,7 @@
 
 #include "../../terminal/terminal.hpp"
 #include "../../utils/utils.hpp"
-
-static void
-fill_random_eca_rules(types::rules &rules)
-{
-  for (auto &rule : rules)
-  {
-    rule = utils::number::get_random_num(0, 255);
-  }
-}
+#include "../reversible-eca/reversible-eca.hpp"
 
 types::short_whole_num
 models::binary_1d_ca_manager::read_num_cells()
@@ -86,7 +78,6 @@ models::binary_1d_ca_manager::print_reversed_isomorphable_ecas()
   types::boundary boundary{models::binary_1d_ca_manager::read_boundary()};
 
   bool header_printed{};
-  types::rules current_rules(num_cells, 0);
   models::binary_1d_ca current_ca{};
 
   std::vector<std::pair<std::string, types::short_whole_num>> headings{
@@ -100,8 +91,7 @@ models::binary_1d_ca_manager::print_reversed_isomorphable_ecas()
 
   for (types::short_whole_num i{}; i < 1000; i++)
   {
-    fill_random_eca_rules(current_rules);
-    current_ca = models::binary_1d_ca(num_cells, 1, 1, boundary, current_rules);
+    current_ca = models::reversible_eca::get_random(num_cells, boundary);
 
     if (current_ca.has_non_trivial_reversed_isomorphisms())
     {
@@ -116,7 +106,7 @@ models::binary_1d_ca_manager::print_reversed_isomorphable_ecas()
           std::to_string(++counter), 7
         ),
         std::make_pair<std::string, types::short_whole_num>(
-          utils::vector::to_string<types::long_whole_num>(current_rules),
+          current_ca.get_rule_vector().to_string(),
           std::max(num_cells * 6, 24)
         )
       };

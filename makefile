@@ -1,7 +1,7 @@
 TARGET: main
 
-main: main.o binary-cell.o binary-1d-ca.o binary-1d-ca-manager.o rule-vector.o utils.general.o utils.math.o utils.matrix.o utils.number.o utils.polynomial.o utils.transition-graph.o
-	g++ main.o binary-cell.o binary-1d-ca.o binary-1d-ca-manager.o rule-vector.o utils.general.o utils.math.o utils.matrix.o utils.number.o utils.polynomial.o utils.transition-graph.o -o main -fopenmp
+main: main.o binary-cell.o binary-1d-ca.o reversible-eca.o binary-1d-ca-manager.o rule-vector.o utils.general.o utils.math.o utils.matrix.o utils.number.o utils.polynomial.o utils.transition-graph.o
+	g++ main.o binary-cell.o binary-1d-ca.o reversible-eca.o binary-1d-ca-manager.o rule-vector.o utils.general.o utils.math.o utils.matrix.o utils.number.o utils.polynomial.o utils.transition-graph.o -o main -fopenmp
 
 main.o: src/main.cpp
 	g++ -c src/main.cpp -o main.o
@@ -11,6 +11,9 @@ binary-cell.o: src/models/binary-cell/binary-cell.cpp
 
 binary-1d-ca.o: src/models/binary-1d-ca/binary-1d-ca.cpp
 	g++ -c src/models/binary-1d-ca/binary-1d-ca.cpp -o binary-1d-ca.o -fopenmp
+
+reversible-eca.o: src/models/reversible-eca/reversible-eca.cpp
+	g++ -c src/models/reversible-eca/reversible-eca.cpp -o reversible-eca.o
 
 binary-1d-ca-manager.o: src/models/binary-1d-ca-manager/binary-1d-ca-manager.cpp
 	g++ -c src/models/binary-1d-ca-manager/binary-1d-ca-manager.cpp -o binary-1d-ca-manager.o

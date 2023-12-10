@@ -1,0 +1,14 @@
+ColumnLimit: 0
+IndentWidth: 2
+TabWidth: 2
+ContinuationIndentWidth: 2
+ConstructorInitializerIndentWidth: 2
+Cpp11BracedListStyle: true
+IndentCaseLabels: true
+IndentAccessModifiers: true
+FixNamespaceComments: false
+BasedOnStyle: Microsoft
+AlwaysBreakAfterReturnType: All
+BreakConstructorInitializers: AfterColon
+AlignAfterOpenBracket: BlockIndent
+NamespaceIndentation: All
