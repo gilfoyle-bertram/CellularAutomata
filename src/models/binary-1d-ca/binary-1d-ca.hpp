@@ -55,8 +55,6 @@ namespace models
       static const types::short_whole_num max_l_radius{2};
       static const types::short_whole_num max_r_radius{2};
 
-      binary_1d_ca(const binary_1d_ca &other) = delete;
-
       binary_1d_ca();
 
       binary_1d_ca(
