@@ -150,8 +150,8 @@ models::binary_1d_ca_manager::access_system()
   std::vector<std::string> choices{
     "print transition graph",
     "print CA details",
-    "print isomorphisms",
-    "check isomorphism",
+    "print isomorphisms (exhaustive)",
+    "check isomorphism (exhaustive)",
     "print complemented isomorphisms",
     "print reversed isomorphisms",
     "print characteristic matrix",
