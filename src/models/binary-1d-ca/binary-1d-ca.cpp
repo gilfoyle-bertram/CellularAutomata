@@ -708,7 +708,7 @@ models::binary_1d_ca::print_reversed_isomorphisms() const
     )
   };
 
-  utils::general::print_header(headings);
+  bool header_printed{};
 
   // The currently allowed maximum cellular automaton size is 10.
   // This means the transition graph will have a maximum of 2^10 = 1024 nodes.
@@ -716,8 +716,11 @@ models::binary_1d_ca::print_reversed_isomorphisms() const
   // In such a case, how to store (1UL << 1024) ?
   for (types::long_whole_num i{}; i < (1UL << cycles.size()); i++)
   {
+    bool is_non_trivial{};
+
     types::transition_graph current_graph(this->num_configs, USHRT_MAX);
     types::rules current_rules(this->num_cells, 0);
+
     types::long_whole_num current_index{i};
     types::short_whole_num current_cycle{};
 
@@ -733,6 +736,11 @@ models::binary_1d_ca::print_reversed_isomorphisms() const
         {
           current_graph.at(this->graph.at(config)) = config;
         }
+
+        if (cycles.at(current_cycle).size() > 2)
+        {
+          is_non_trivial = true;
+        }
       }
       else
       {
@@ -745,6 +753,11 @@ models::binary_1d_ca::print_reversed_isomorphisms() const
       current_index >>= 1;
       index_mask >>= 1;
       current_cycle += 1;
+    }
+
+    if (!is_non_trivial)
+    {
+      continue;
     }
 
     for (types::short_whole_num i{}; i < current_graph.size(); i++)
@@ -768,8 +781,19 @@ models::binary_1d_ca::print_reversed_isomorphisms() const
         )
       };
 
+      if (!header_printed)
+      {
+        utils::general::print_header(headings);
+        header_printed = true;
+      }
+
       utils::general::print_row(entries);
     }
+  }
+
+  if (!header_printed)
+  {
+    utils::general::print_msg("no non-trivial reversed isomorphisms", colors::blue);
   }
 }
 
