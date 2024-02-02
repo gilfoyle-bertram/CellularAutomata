@@ -95,6 +95,23 @@ models::binary_1d_ca::is_elementary() const
 }
 
 bool
+models::binary_1d_ca::is_reversible() const
+{
+  std::vector<std::unordered_set<types::short_whole_num>> cycles{
+    utils::transition_graph::get_cycles(this->get_graph())
+  };
+
+  types::short_whole_num num_cycled_nodes{};
+
+  for (const auto &cycle : cycles)
+  {
+    num_cycled_nodes += cycle.size();
+  }
+
+  return num_cycled_nodes == this->get_graph().size();
+}
+
+bool
 models::binary_1d_ca::has_complemented_isomorphisms() const
 {
   if (!this->is_elementary())
@@ -351,7 +368,7 @@ models::binary_1d_ca::get_current_config() const
 // The execution of threads continue, even after determining the CA to be isomorphic.
 // This is because there is no way (as per my knowledge) to break out of OMP loops.
 bool
-models::binary_1d_ca::is_isomorphic(models::binary_1d_ca &other) const
+models::binary_1d_ca::is_isomorphic(const models::binary_1d_ca &other) const
 {
   bool is_isomorphic{};
 
@@ -416,7 +433,7 @@ bool
 models::binary_1d_ca::has_non_trivial_reversed_isomorphisms() const
 {
   std::vector<std::unordered_set<types::short_whole_num>> cycles{
-    utils::transition_graph::get_cycles(this->graph)
+    utils::transition_graph::get_cycles(this->get_graph())
   };
 
   if (cycles.size() == 0)
@@ -690,7 +707,7 @@ void
 models::binary_1d_ca::print_reversed_isomorphisms() const
 {
   std::vector<std::unordered_set<types::short_whole_num>> cycles{
-    utils::transition_graph::get_cycles(this->graph)
+    utils::transition_graph::get_cycles(this->get_graph())
   };
 
   if (cycles.size() == 0)

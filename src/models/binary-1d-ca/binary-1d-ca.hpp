@@ -30,6 +30,9 @@ namespace models
       is_elementary() const;
 
       bool
+      is_reversible() const;
+
+      bool
       has_complemented_isomorphisms() const;
 
       bool
@@ -93,7 +96,7 @@ namespace models
       get_current_config() const;
 
       bool
-      is_isomorphic(models::binary_1d_ca &other) const;
+      is_isomorphic(const models::binary_1d_ca &other) const;
 
       bool
       has_non_trivial_reversed_isomorphisms() const;
