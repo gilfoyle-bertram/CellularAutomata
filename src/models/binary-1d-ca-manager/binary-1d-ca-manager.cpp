@@ -156,6 +156,7 @@ models::binary_1d_ca_manager::access_system()
     "print reversed isomorphisms",
     "print characteristic matrix",
     "print characteristic polynomial",
+    "print CAs by complementing rules based on equivalent RMTs",
     "go back"
   };
 
@@ -218,6 +219,11 @@ models::binary_1d_ca_manager::access_system()
 
       case 8: {
         this->current_ca.print_characterisitc_polynomial();
+        break;
+      }
+
+      case 9: {
+        this->current_ca.print_rmts_complemented_rules();
         break;
       }
 

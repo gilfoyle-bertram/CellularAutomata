@@ -120,6 +120,9 @@ namespace models
       print_characterisitc_polynomial() const;
 
       void
+      print_rmts_complemented_rules() const;
+
+      void
       update_config();
   };
 }

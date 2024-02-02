@@ -122,9 +122,9 @@ models::binary_1d_ca::extract_rules(
       std::string next_config_str{utils::number::to_binary_str(graph.at(j), this->num_cells)};
       std::string neighborhood_str{this->get_neighborhood_str(i, current_config_str)};
 
-      types::short_whole_num neighborhood{static_cast<types::short_whole_num>(
-        utils::number::parse_binary_str(neighborhood_str)
-      )};
+      types::short_whole_num neighborhood{
+        static_cast<types::short_whole_num>(utils::number::parse_binary_str(neighborhood_str))
+      };
 
       char next_state{next_config_str.at(i)};
 
@@ -830,6 +830,105 @@ models::binary_1d_ca::print_characterisitc_polynomial() const
   catch (const std::exception &err)
   {
     utils::general::print_msg(err.what(), colors ::red);
+  }
+}
+
+void
+models::binary_1d_ca::print_rmts_complemented_rules() const
+{
+  if (!this->is_elementary())
+  {
+    throw std::domain_error{"RMTs complemented rules are only supported for ECAs"};
+  }
+
+  static std::vector<std::vector<types::short_whole_num>> equivalent_rmts{
+    {0, 4}, {1, 5}, {2, 6}, {3, 7}
+  };
+
+  std::vector<std::pair<std::string, types::short_whole_num>> headings{
+    std::make_pair<std::string, types::short_whole_num>(
+      "s. no", 7
+    ),
+    std::make_pair<std::string, types::short_whole_num>(
+      "cell", 4
+    ),
+    std::make_pair<std::string, types::short_whole_num>(
+      "complemented RMTs", 17
+    ),
+    std::make_pair<std::string, types::short_whole_num>(
+      "rules", std::max(this->num_cells * 6, 24)
+    )
+  };
+
+  utils::general::print_header(headings);
+
+  for (types::short_whole_num i{}; i < this->num_cells; i++)
+  {
+    std::string current_rule_str{
+      utils::number::to_binary_str(this->rule_vector.at(i), 1U << this->num_neighbors)
+    };
+
+    for (types::short_whole_num j{}; j < (1 << equivalent_rmts.size()); j++)
+    {
+      std::vector<types::short_whole_num> rmts_to_complement{};
+      std::string rmts_complemented_rule_str{current_rule_str};
+
+      types::short_whole_num current_index{j};
+      types::short_whole_num current_rmt_group{};
+
+      types::short_whole_num index_mask{
+        static_cast<types::short_whole_num>((1U << equivalent_rmts.size()) - 1)
+      };
+
+      while (index_mask)
+      {
+        if (current_index & 1)
+        {
+          rmts_to_complement.push_back(equivalent_rmts.at(current_rmt_group).at(0));
+        }
+        else
+        {
+          rmts_to_complement.push_back(equivalent_rmts.at(current_rmt_group).at(1));
+        }
+
+        current_index >>= 1;
+        index_mask >>= 1;
+        current_rmt_group += 1;
+      }
+
+      for (types::short_whole_num k{}; k < rmts_to_complement.size(); k++)
+      {
+        types::short_whole_num str_index{
+          static_cast<types::short_whole_num>(current_rule_str.size() - rmts_to_complement.at(k) - 1)
+        };
+
+        rmts_complemented_rule_str.at(str_index) = current_rule_str.at(str_index) == '1' ? '0' : '1';
+      }
+
+      types::long_whole_num rmt_complemented_rule{
+        utils::number::parse_binary_str(rmts_complemented_rule_str)
+      };
+
+      models::rule_vector rmt_complemented_rule_vector{this->get_rule_vector()};
+      rmt_complemented_rule_vector.at(i) = rmt_complemented_rule;
+
+      std::vector<std::pair<std::string, types::short_whole_num>> entries{
+        std::make_pair<std::string, types::short_whole_num>(
+          std::to_string(i * (1 << equivalent_rmts.size()) + (j + 1)), 7
+        ),
+        std::make_pair<std::string, types::short_whole_num>(
+          std::to_string(i + 1), 4
+        ),
+        std::make_pair<std::string, types::short_whole_num>(
+          utils::vector::to_string(rmts_to_complement), 17
+        ),
+        std::make_pair<std::string, types::short_whole_num>(
+          rmt_complemented_rule_vector.to_string(), std::max(this->num_cells * 6, 24)
+        )
+      };
+
+      utils::general::print_row(entries);
+    }
   }
 }
 
