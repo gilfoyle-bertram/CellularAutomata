@@ -112,6 +112,40 @@ models::binary_1d_ca::is_reversible() const
 }
 
 bool
+models::binary_1d_ca::has_cycle_strucutre_as(const models::binary_1d_ca &other) const
+{
+  static auto by_size{[](const auto &obj_1, const auto &obj_2) {
+    return obj_1.size() < obj_2.size();
+  }};
+
+  std::vector<std::unordered_set<types::short_whole_num>> this_cycles{
+    utils::transition_graph::get_cycles(this->get_graph())
+  };
+
+  std::vector<std::unordered_set<types::short_whole_num>> other_cycles{
+    utils::transition_graph::get_cycles(other.get_graph())
+  };
+
+  if (this_cycles.size() != other_cycles.size())
+  {
+    return false;
+  }
+
+  std::sort(this_cycles.begin(), this_cycles.end(), by_size);
+  std::sort(other_cycles.begin(), other_cycles.end(), by_size);
+
+  for (types::short_whole_num i{}; i < this_cycles.size(); i++)
+  {
+    if (this_cycles.at(i).size() != other_cycles.at(i).size())
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool
 models::binary_1d_ca::has_complemented_isomorphisms() const
 {
   if (!this->is_elementary())
@@ -858,6 +892,11 @@ models::binary_1d_ca::print_rmts_complemented_rules() const
     throw std::domain_error{"RMTs complemented rules are only supported for ECAs"};
   }
 
+  if (!this->is_reversible())
+  {
+    throw std::domain_error{"RMTs complemented rules are only supported for reversible ECAs"};
+  }
+
   static std::vector<std::vector<types::short_whole_num>> equivalent_rmts{
     {0, 4}, {1, 5}, {2, 6}, {3, 7}
   };
@@ -874,6 +913,9 @@ models::binary_1d_ca::print_rmts_complemented_rules() const
     ),
     std::make_pair<std::string, types::short_whole_num>(
       "rules", std::max(this->num_cells * 6, 24)
+    ),
+    std::make_pair<std::string, types::short_whole_num>(
+      "isomorphic", 10
     )
   };
 
@@ -922,12 +964,20 @@ models::binary_1d_ca::print_rmts_complemented_rules() const
         rmts_complemented_rule_str.at(str_index) = current_rule_str.at(str_index) == '1' ? '0' : '1';
       }
 
-      types::long_whole_num rmt_complemented_rule{
+      types::long_whole_num rmts_complemented_rule{
         utils::number::parse_binary_str(rmts_complemented_rule_str)
       };
 
-      models::rule_vector rmt_complemented_rule_vector{this->get_rule_vector()};
-      rmt_complemented_rule_vector.at(i) = rmt_complemented_rule;
+      models::rule_vector rmts_complemented_rule_vector{this->get_rule_vector()};
+      rmts_complemented_rule_vector.at(i) = rmts_complemented_rule;
+
+      bool is_isomorphic{this->has_cycle_strucutre_as(models::binary_1d_ca{
+        this->num_cells,
+        this->l_radius,
+        this->r_radius,
+        this->boundary,
+        rmts_complemented_rule_vector.get_rules()
+      })};
 
       std::vector<std::pair<std::string, types::short_whole_num>> entries{
         std::make_pair<std::string, types::short_whole_num>(
@@ -940,7 +990,10 @@ models::binary_1d_ca::print_rmts_complemented_rules() const
           utils::vector::to_string(rmts_to_complement), 17
         ),
         std::make_pair<std::string, types::short_whole_num>(
-          rmt_complemented_rule_vector.to_string(), std::max(this->num_cells * 6, 24)
+          rmts_complemented_rule_vector.to_string(), std::max(this->num_cells * 6, 24)
+        ),
+        std::make_pair<std::string, types::short_whole_num>(
+          is_isomorphic ? "true" : "false", 10
         )
       };
 

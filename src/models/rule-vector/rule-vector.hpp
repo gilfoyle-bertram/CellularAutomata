@@ -26,6 +26,9 @@ namespace models
       bool
       is_complementable(types::boundary boundary) const;
 
+      const types::rules &
+      get_rules() const;
+
       types::long_whole_num
       at(std::size_t index) const;
 

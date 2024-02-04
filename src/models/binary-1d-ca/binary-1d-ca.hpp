@@ -33,6 +33,9 @@ namespace models
       is_reversible() const;
 
       bool
+      has_cycle_strucutre_as(const models::binary_1d_ca &other) const;
+
+      bool
       has_complemented_isomorphisms() const;
 
       bool

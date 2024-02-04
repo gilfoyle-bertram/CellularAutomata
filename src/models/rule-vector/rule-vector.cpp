@@ -200,6 +200,12 @@ models::rule_vector::is_complementable(types::boundary boundary) const
   return is_complementable_polynomial(coeffs);
 }
 
+const types::rules &
+models::rule_vector::get_rules() const
+{
+  return this->rules;
+}
+
 types::long_whole_num
 models::rule_vector::at(std::size_t index) const
 {
