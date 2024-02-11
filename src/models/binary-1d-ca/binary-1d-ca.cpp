@@ -114,7 +114,7 @@ models::binary_1d_ca::is_reversible() const
 bool
 models::binary_1d_ca::has_cycle_strucutre_as(const models::binary_1d_ca &other) const
 {
-  static auto by_size{[](const auto &obj_1, const auto &obj_2) {
+  static auto by_size_asc{[](const auto &obj_1, const auto &obj_2) {
     return obj_1.size() < obj_2.size();
   }};
 
@@ -131,8 +131,8 @@ models::binary_1d_ca::has_cycle_strucutre_as(const models::binary_1d_ca &other) 
     return false;
   }
 
-  std::sort(this_cycles.begin(), this_cycles.end(), by_size);
-  std::sort(other_cycles.begin(), other_cycles.end(), by_size);
+  std::sort(this_cycles.begin(), this_cycles.end(), by_size_asc);
+  std::sort(other_cycles.begin(), other_cycles.end(), by_size_asc);
 
   for (types::short_whole_num i{}; i < this_cycles.size(); i++)
   {
@@ -464,8 +464,15 @@ models::binary_1d_ca::is_isomorphic(const models::binary_1d_ca &other) const
 }
 
 bool
-models::binary_1d_ca::has_non_trivial_reversed_isomorphisms() const
+models::binary_1d_ca::has_non_trivial_reversed_isomorphisms(
+  bool &has_trivial_partition,
+  bool &has_non_trivial_partitions
+) const
 {
+  static auto by_size_desc{[](const auto &obj_1, const auto &obj_2) {
+    return obj_1.size() > obj_2.size();
+  }};
+
   std::vector<std::unordered_set<types::short_whole_num>> cycles{
     utils::transition_graph::get_cycles(this->get_graph())
   };
@@ -475,14 +482,39 @@ models::binary_1d_ca::has_non_trivial_reversed_isomorphisms() const
     return false;
   }
 
+  types::short_whole_num num_trivial_cycles{};
+  std::sort(cycles.begin(), cycles.end(), by_size_desc);
+
+  for (const auto &cycle : cycles)
+  {
+    if (cycle.size() <= 2)
+    {
+      num_trivial_cycles += 1;
+    }
+  }
+
+  for (types::short_whole_num i{}; i < num_trivial_cycles; i++)
+  {
+    cycles.pop_back();
+  }
+
+  if (cycles.size() == 0)
+  {
+    return false;
+  }
+
+  bool has_reversed_isomorphisms{};
+  bool trivially_partitionable{};
+  bool non_trivially_partitionable{};
+
+  types::long_whole_num max_combinations{1UL << cycles.size()};
+
   // The currently allowed maximum cellular automaton size is 10.
   // This means the transition graph will have a maximum of 2^10 = 1024 nodes.
   // In the worst case, each node can have a self-loop, giving us 1024 cycles.
   // In such a case, how to store (1UL << 1024) ?
-  for (types::long_whole_num i{}; i < (1UL << cycles.size()); i++)
+  for (types::long_whole_num i{1}; i < max_combinations; i++)
   {
-    bool is_non_trivial{};
-
     types::transition_graph current_graph(this->num_configs, USHRT_MAX);
     types::rules current_rules(this->num_cells, 0);
 
@@ -501,11 +533,6 @@ models::binary_1d_ca::has_non_trivial_reversed_isomorphisms() const
         {
           current_graph.at(this->graph.at(config)) = config;
         }
-
-        if (cycles.at(current_cycle).size() > 2)
-        {
-          is_non_trivial = true;
-        }
       }
       else
       {
@@ -520,11 +547,6 @@ models::binary_1d_ca::has_non_trivial_reversed_isomorphisms() const
       current_cycle += 1;
     }
 
-    if (!is_non_trivial)
-    {
-      continue;
-    }
-
     for (types::short_whole_num i{}; i < current_graph.size(); i++)
     {
       if (current_graph.at(i) == USHRT_MAX)
@@ -535,11 +557,23 @@ models::binary_1d_ca::has_non_trivial_reversed_isomorphisms() const
 
     if (this->extract_rules(current_graph, current_rules))
     {
-      return true;
+      has_reversed_isomorphisms = true;
+
+      if (i == max_combinations - 1)
+      {
+        trivially_partitionable = true;
+      }
+      else
+      {
+        non_trivially_partitionable = true;
+      }
     }
   }
 
-  return false;
+  has_trivial_partition = trivially_partitionable;
+  has_non_trivial_partitions = non_trivially_partitionable;
+
+  return has_reversed_isomorphisms;
 }
 
 void

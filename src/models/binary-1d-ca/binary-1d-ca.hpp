@@ -102,7 +102,10 @@ namespace models
       is_isomorphic(const models::binary_1d_ca &other) const;
 
       bool
-      has_non_trivial_reversed_isomorphisms() const;
+      has_non_trivial_reversed_isomorphisms(
+        bool &has_trivial_partition,
+        bool &has_non_trivial_partitions
+      ) const;
 
       void
       print_isomorphisms() const;

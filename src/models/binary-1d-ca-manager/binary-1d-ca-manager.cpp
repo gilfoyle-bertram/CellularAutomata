@@ -78,6 +78,8 @@ models::binary_1d_ca_manager::print_reversed_isomorphable_ecas()
   types::boundary boundary{models::binary_1d_ca_manager::read_boundary()};
 
   bool header_printed{};
+  bool has_trivial_partition{};
+  bool has_non_trivial_partitions{};
   models::binary_1d_ca current_ca{};
 
   std::vector<std::pair<std::string, types::short_whole_num>> headings{
@@ -86,14 +88,22 @@ models::binary_1d_ca_manager::print_reversed_isomorphable_ecas()
     ),
     std::make_pair<std::string, types::short_whole_num>(
       "rules", std::max(num_cells * 6, 24)
+    ),
+    std::make_pair<std::string, types::short_whole_num>(
+      "trivial_partition", 17
+    ),
+    std::make_pair<std::string, types::short_whole_num>(
+      "non_trivial_partitions", 22
     )
   };
 
   for (types::short_whole_num i{}; i < 1000; i++)
   {
+    has_trivial_partition = false;
+    has_non_trivial_partitions = false;
     current_ca = models::reversible_eca::get_random(num_cells, boundary);
 
-    if (current_ca.has_non_trivial_reversed_isomorphisms())
+    if (current_ca.has_non_trivial_reversed_isomorphisms(has_trivial_partition, has_non_trivial_partitions))
     {
       if (!header_printed)
       {
@@ -108,6 +118,12 @@ models::binary_1d_ca_manager::print_reversed_isomorphable_ecas()
         std::make_pair<std::string, types::short_whole_num>(
           current_ca.get_rule_vector().to_string(),
           std::max(num_cells * 6, 24)
+        ),
+        std::make_pair<std::string, types::short_whole_num>(
+          has_trivial_partition ? "true" : "false", 17
+        ),
+        std::make_pair<std::string, types::short_whole_num>(
+          has_non_trivial_partitions ? "true" : "false", 22
         )
       };
 
