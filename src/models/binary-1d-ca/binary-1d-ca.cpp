@@ -786,7 +786,7 @@ models::binary_1d_ca::print_reversed_isomorphisms() const
 
   std::vector<std::pair<std::string, types::short_whole_num>> headings{
     std::make_pair<std::string, types::short_whole_num>(
-      "pattern", 7
+      "pattern", std::max(static_cast<types::num>(cycles.size()), 7)
     ),
     std::make_pair<std::string, types::short_whole_num>(
       "rules", std::max(this->num_cells * 6, 24)
@@ -857,7 +857,8 @@ models::binary_1d_ca::print_reversed_isomorphisms() const
     {
       std::vector<std::pair<std::string, types::short_whole_num>> entries{
         std::make_pair<std::string, types::short_whole_num>(
-          std::to_string(i), 7
+          utils::number::to_binary_str(i, cycles.size()),
+          std::max(static_cast<types::num>(cycles.size()), 7)
         ),
 
         std::make_pair<std::string, types::short_whole_num>(
