@@ -24,6 +24,9 @@ namespace models
       static void
       print_reversed_isomorphable_ecas();
 
+      static void
+      print_single_cycle_reversible_ecas();
+
       void
       read_ca_details();
 
