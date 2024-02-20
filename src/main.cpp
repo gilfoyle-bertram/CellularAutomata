@@ -25,6 +25,7 @@ class controller
         "print complementable linear ECAs",
         "print random ECAs with non-trivial reversed isomorphisms",
         "print random single cycle reversible ECAs",
+        "print random reversible ECAs",
         "feed CA details manually",
         "exit"
       };
@@ -50,6 +51,10 @@ class controller
               break;
 
             case 4:
+              this->ca_manager.print_reversible_ecas();
+              break;
+
+            case 5:
               this->ca_manager.access_system();
               break;
 

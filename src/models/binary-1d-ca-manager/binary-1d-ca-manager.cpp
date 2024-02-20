@@ -189,6 +189,44 @@ models::binary_1d_ca_manager::print_single_cycle_reversible_ecas()
 }
 
 void
+models::binary_1d_ca_manager::print_reversible_ecas()
+{
+  types::short_whole_num counter{};
+  types::short_whole_num num_cells{models::binary_1d_ca_manager::read_num_cells()};
+  types::boundary boundary{models::binary_1d_ca_manager::read_boundary()};
+
+  models::binary_1d_ca current_ca{};
+
+  std::vector<std::pair<std::string, types::short_whole_num>> headings{
+    std::make_pair<std::string, types::short_whole_num>(
+      "s. no", 7
+    ),
+    std::make_pair<std::string, types::short_whole_num>(
+      "rules", std::max(num_cells * 6, 24)
+    )
+  };
+
+  utils::general::print_header(headings);
+
+  for (types::short_whole_num i{}; i < 100; i++)
+  {
+    current_ca = models::reversible_eca::get_random(num_cells, boundary);
+
+    std::vector<std::pair<std::string, types::short_whole_num>> entries{
+      std::make_pair<std::string, types::short_whole_num>(
+        std::to_string(++counter), 7
+      ),
+      std::make_pair<std::string, types::short_whole_num>(
+        current_ca.get_rule_vector().to_string(),
+        std::max(num_cells * 6, 24)
+      )
+    };
+
+    utils::general::print_row(entries);
+  }
+}
+
+void
 models::binary_1d_ca_manager::read_ca_details()
 {
   types::short_whole_num num_cells{models::binary_1d_ca_manager::read_num_cells()};

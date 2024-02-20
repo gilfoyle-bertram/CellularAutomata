@@ -27,6 +27,9 @@ namespace models
       static void
       print_single_cycle_reversible_ecas();
 
+      static void
+      print_reversible_ecas();
+
       void
       read_ca_details();
 
