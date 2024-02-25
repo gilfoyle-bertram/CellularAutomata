@@ -5,14 +5,13 @@
 
 // For a transition graph, a node can be in maximum of one cycle only.
 // This is because the out-degree of any node is exactly 1.
-std::vector<std::unordered_set<types::short_whole_num>>
+types::cycles
 utils::transition_graph::get_cycles(const types::transition_graph &graph)
 {
+  types::cycles cycles{};
   types::short_whole_num current_node{};
-
   std::unordered_set<types::short_whole_num> visited_nodes{};
   std::unordered_set<types::short_whole_num> cycled_nodes{};
-  std::vector<std::unordered_set<types::short_whole_num>> cycles{};
 
   for (types::short_whole_num i{}; i < graph.size(); i++)
   {
@@ -28,7 +27,6 @@ utils::transition_graph::get_cycles(const types::transition_graph &graph)
       {
         std::unordered_set<types::short_whole_num> current_cycle{};
         types::short_whole_num start_node{current_node};
-
         bool is_cycle{true};
         current_cycle.insert(start_node);
 
@@ -74,11 +72,7 @@ utils::transition_graph::print(
 {
   std::ostringstream out_stream{};
   bool is_first_cycle{true};
-
-  std::vector<std::unordered_set<types::short_whole_num>> cycles{
-    utils::transition_graph::get_cycles(graph)
-  };
-
+  types::cycles cycles{utils::transition_graph::get_cycles(graph)};
   std::unordered_set<types::short_whole_num> visited_nodes{};
 
   for (const auto &cycle : cycles)
@@ -90,7 +84,6 @@ utils::transition_graph::print(
     types::short_whole_num current_node{start_node};
 
     visited_nodes.insert(current_node);
-
     out_stream << current_node;
     out_stream << " --> ";
 
@@ -98,13 +91,11 @@ utils::transition_graph::print(
     {
       out_stream << current_node;
       out_stream << " --> ";
-
       visited_nodes.insert(current_node);
     }
 
     out_stream << current_node;
     out_stream << colors::reset;
-
     is_first_cycle = false;
   }
 
@@ -119,7 +110,6 @@ utils::transition_graph::print(
       {
         current_node = i + 1;
         is_new_component = true;
-
         break;
       }
 

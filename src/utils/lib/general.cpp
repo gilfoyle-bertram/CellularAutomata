@@ -41,10 +41,9 @@ static types::short_whole_num
 read_choice(types::short_whole_num low, types::short_whole_num high)
 {
   types::short_whole_num value{};
-
   std::cout << "\n";
-  std::cout << "enter number in range " << low << " - " << high << ": ";
 
+  std::cout << "Enter number in range " << low << " - " << high << " : ";
   std::cin >> value;
 
   if (low <= value && value <= high)
@@ -52,7 +51,7 @@ read_choice(types::short_whole_num low, types::short_whole_num high)
     return value;
   }
 
-  utils::general::print_msg("err: invalid number\n     try again", colors::red);
+  utils::general::print_msg("ERR: Invalid number\n     Try again", colors::red);
   return read_choice(low, high);
 }
 
@@ -68,7 +67,7 @@ utils::general::get_choice(const std::vector<std::string> &choices)
   std::cout << decorate::underline;
   std::cout << colors::pink;
   std::cout << "\n";
-  std::cout << "menu:";
+  std::cout << "Menu:";
   std::cout << "\n";
   std::cout << colors::reset;
   std::cout << decorate::reset;

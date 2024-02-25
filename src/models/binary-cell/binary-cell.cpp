@@ -34,7 +34,6 @@ models::binary_cell::next_state(const std::string &neighborhood) const
 {
   types::whole_num num_neighbors{static_cast<types::whole_num>(neighborhood.size())};
   std::string rule_str{utils::number::to_binary_str(this->rule, 1U << num_neighbors)};
-
   return rule_str.at(rule_str.size() - utils::number::parse_binary_str(neighborhood) - 1) == '1';
 }
 

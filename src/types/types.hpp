@@ -1,6 +1,7 @@
 #ifndef __TYPES__
 #define __TYPES__
 
+#include <unordered_set>
 #include <vector>
 
 namespace types
@@ -21,8 +22,8 @@ namespace types
   using long_whole_num = unsigned long;
 
   using rules = std::vector<long_whole_num>;
-
   using matrix = std::vector<std::vector<short_num>>;
+  using cycles = std::vector<std::unordered_set<types::short_whole_num>>;
 
   // A polynomial can be represented as a 1D array, by storing its co-efficients.
   // So `coeffs[i] = j`, means the co-efficient of (x^i) is j.

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "../../types/types.hpp"
@@ -46,6 +47,9 @@ namespace models
 
       std::string
       get_neighborhood_str(types::short_whole_num cell_num, const std::string &config_str) const;
+
+      std::unordered_set<types::short_whole_num>
+      get_affected_configs(const models::binary_1d_ca &other, types::short_whole_num &num_cycles_affected) const;
 
       void
       set_rules(const types::rules &rules);
@@ -130,6 +134,9 @@ namespace models
 
       void
       print_rmts_complemented_rules() const;
+
+      void
+      tweak_rules() const;
 
       void
       update_config();

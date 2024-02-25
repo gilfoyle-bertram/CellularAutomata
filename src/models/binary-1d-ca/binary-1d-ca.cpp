@@ -16,10 +16,10 @@ get_boundary_str(types::boundary boundary)
 {
   if (boundary == types::boundary::null)
   {
-    return "null";
+    return "Null";
   }
 
-  return "periodic";
+  return "Periodic";
 }
 
 static void
@@ -31,17 +31,17 @@ validate_radii(
 {
   if (l_radius > models::binary_1d_ca::max_l_radius)
   {
-    throw std::invalid_argument{"unsupported left radius"};
+    throw std::invalid_argument{"Unsupported left radius"};
   }
 
   if (r_radius > models::binary_1d_ca::max_r_radius)
   {
-    throw std::invalid_argument{"unsupported right radius"};
+    throw std::invalid_argument{"Unsupported right radius"};
   }
 
   if (num_cells < l_radius + r_radius + 1)
   {
-    throw std::invalid_argument{"neighborhood size can't be greater than CA size"};
+    throw std::invalid_argument{"Neighborhood size can't be greater than CA size"};
   }
 }
 
@@ -55,26 +55,18 @@ validate_rules(
 {
   if (num_cells != rules.size())
   {
-    throw std::invalid_argument{"number of rules must be equal to number of cells"};
+    throw std::invalid_argument{"Number of rules must be equal to number of cells"};
   }
 
-  types::short_whole_num num_neighbors{
-    static_cast<types::short_whole_num>(l_radius + r_radius + 1)
-  };
-
-  types::short_whole_num num_rule_min_terms{
-    static_cast<types::short_whole_num>(1U << num_neighbors)
-  };
-
-  types::long_whole_num max_rule{
-    (1UL << num_rule_min_terms) - 1
-  };
+  types::short_whole_num num_neighbors{static_cast<types::short_whole_num>(l_radius + r_radius + 1)};
+  types::short_whole_num num_rule_min_terms{static_cast<types::short_whole_num>(1U << num_neighbors)};
+  types::long_whole_num max_rule{(1UL << num_rule_min_terms) - 1};
 
   for (const auto &rule : rules)
   {
     if (rule > max_rule)
     {
-      throw std::invalid_argument{"invalid rule - " + std::to_string(rule)};
+      throw std::invalid_argument{"Invalid rule - " + std::to_string(rule)};
     }
   }
 }
@@ -84,7 +76,7 @@ validate_ca_size(types::short_whole_num num_cells)
 {
   if (num_cells > models::binary_1d_ca::max_size)
   {
-    throw std::invalid_argument{"unsupported cellular automata size"};
+    throw std::invalid_argument{"Unsupported cellular automata size"};
   }
 }
 
@@ -97,10 +89,7 @@ models::binary_1d_ca::is_elementary() const
 bool
 models::binary_1d_ca::is_reversible() const
 {
-  std::vector<std::unordered_set<types::short_whole_num>> cycles{
-    utils::transition_graph::get_cycles(this->get_graph())
-  };
-
+  types::cycles cycles{utils::transition_graph::get_cycles(this->get_graph())};
   types::short_whole_num num_cycled_nodes{};
 
   for (const auto &cycle : cycles)
@@ -118,13 +107,8 @@ models::binary_1d_ca::has_cycle_strucutre_as(const models::binary_1d_ca &other) 
     return obj_1.size() < obj_2.size();
   }};
 
-  std::vector<std::unordered_set<types::short_whole_num>> this_cycles{
-    utils::transition_graph::get_cycles(this->get_graph())
-  };
-
-  std::vector<std::unordered_set<types::short_whole_num>> other_cycles{
-    utils::transition_graph::get_cycles(other.get_graph())
-  };
+  types::cycles this_cycles{utils::transition_graph::get_cycles(this->get_graph())};
+  types::cycles other_cycles{utils::transition_graph::get_cycles(other.get_graph())};
 
   if (this_cycles.size() != other_cycles.size())
   {
@@ -150,17 +134,14 @@ models::binary_1d_ca::has_complemented_isomorphisms() const
 {
   if (!this->is_elementary())
   {
-    throw std::domain_error{"complemented isomorphisms are only supported for ECAs"};
+    throw std::domain_error{"Complemented isomorphisms are only supported for ECAs"};
   }
 
   return this->rule_vector.is_complementable(this->boundary);
 }
 
 bool
-models::binary_1d_ca::extract_rules(
-  const types::transition_graph &graph,
-  types::rules &rules
-) const
+models::binary_1d_ca::extract_rules(const types::transition_graph &graph, types::rules &rules) const
 {
   for (types::short_whole_num i{}; i < this->num_cells; i++)
   {
@@ -173,9 +154,9 @@ models::binary_1d_ca::extract_rules(
       std::string next_config_str{utils::number::to_binary_str(graph.at(j), this->num_cells)};
       std::string neighborhood_str{this->get_neighborhood_str(i, current_config_str)};
 
-      types::short_whole_num neighborhood{
-        static_cast<types::short_whole_num>(utils::number::parse_binary_str(neighborhood_str))
-      };
+      types::short_whole_num neighborhood{static_cast<types::short_whole_num>(
+        utils::number::parse_binary_str(neighborhood_str)
+      )};
 
       char next_state{next_config_str.at(i)};
 
@@ -212,19 +193,12 @@ models::binary_1d_ca::get_next_config(types::short_whole_num current_config)
   }
 
   std::ostringstream next_config_stream{};
-
-  std::string current_config_str{
-    utils::number::to_binary_str(current_config, this->num_cells)
-  };
+  std::string current_config_str{utils::number::to_binary_str(current_config, this->num_cells)};
 
   for (types::short_whole_num i{}; i < this->num_cells; i++)
   {
     models::binary_cell &current_cell{this->cells.at(i)};
-
-    bool next_state{
-      current_cell.next_state(this->get_neighborhood_str(i, current_config_str))
-    };
-
+    bool next_state{current_cell.next_state(this->get_neighborhood_str(i, current_config_str))};
     next_config_stream << static_cast<types::short_whole_num>(next_state);
   }
 
@@ -275,6 +249,44 @@ models::binary_1d_ca::get_neighborhood_str(
   }
 
   return neighborhood_stream.str();
+}
+
+std::unordered_set<types::short_whole_num>
+models::binary_1d_ca::get_affected_configs(
+  const models::binary_1d_ca &other,
+  types::short_whole_num &num_cycles_affected
+) const
+{
+  types::cycles this_cycles{utils::transition_graph::get_cycles(this->get_graph())};
+  std::unordered_set<types::short_whole_num> affected_configs{};
+  std::vector<bool> is_cycle_affected(this_cycles.size(), false);
+
+  const types::transition_graph &this_graph{this->get_graph()};
+  const types::transition_graph &other_graph{other.get_graph()};
+
+  for (const auto &config : this_graph)
+  {
+    if (this_graph.at(config) != other_graph.at(config))
+    {
+      affected_configs.insert(config);
+    }
+  }
+
+  num_cycles_affected = 0;
+
+  for (const auto &config : affected_configs)
+  {
+    for (types::short_whole_num i{}; i < this_cycles.size(); i++)
+    {
+      if (this_cycles.at(i).count(config))
+      {
+        num_cycles_affected += is_cycle_affected.at(i) ? 0 : 1;
+        is_cycle_affected.at(i) = true;
+      }
+    }
+  }
+
+  return affected_configs;
 }
 
 void
@@ -454,9 +466,7 @@ models::binary_1d_ca::is_isomorphic(const models::binary_1d_ca &other) const
             is_isomorphic = true;
           }
         }
-      } while (
-        std::next_permutation(local_permutation.begin() + 1, local_permutation.end())
-      );
+      } while (std::next_permutation(local_permutation.begin() + 1, local_permutation.end()));
     }
   }
 
@@ -473,9 +483,7 @@ models::binary_1d_ca::has_non_trivial_reversed_isomorphisms(
     return obj_1.size() > obj_2.size();
   }};
 
-  std::vector<std::unordered_set<types::short_whole_num>> cycles{
-    utils::transition_graph::get_cycles(this->get_graph())
-  };
+  types::cycles cycles{utils::transition_graph::get_cycles(this->get_graph())};
 
   if (cycles.size() == 0)
   {
@@ -506,7 +514,6 @@ models::binary_1d_ca::has_non_trivial_reversed_isomorphisms(
   bool has_reversed_isomorphisms{};
   bool trivially_partitionable{};
   bool non_trivially_partitionable{};
-
   types::long_whole_num max_combinations{1UL << cycles.size()};
 
   // The currently allowed maximum cellular automaton size is 10.
@@ -517,13 +524,9 @@ models::binary_1d_ca::has_non_trivial_reversed_isomorphisms(
   {
     types::transition_graph current_graph(this->num_configs, USHRT_MAX);
     types::rules current_rules(this->num_cells, 0);
-
-    types::long_whole_num current_index{i};
     types::short_whole_num current_cycle{};
-
-    types::long_whole_num index_mask{
-      static_cast<types::long_whole_num>((1UL << cycles.size()) - 1)
-    };
+    types::long_whole_num current_index{i};
+    types::long_whole_num index_mask{static_cast<types::long_whole_num>((1UL << cycles.size()) - 1)};
 
     while (index_mask)
     {
@@ -572,7 +575,6 @@ models::binary_1d_ca::has_non_trivial_reversed_isomorphisms(
 
   has_trivial_partition = trivially_partitionable;
   has_non_trivial_partitions = non_trivially_partitionable;
-
   return has_reversed_isomorphisms;
 }
 
@@ -589,12 +591,8 @@ models::binary_1d_ca::print_isomorphisms() const
   }
 
   std::vector<std::pair<std::string, types::short_whole_num>> headings{
-    std::make_pair<std::string, types::short_whole_num>(
-      "s. no", 7
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      "rules", std::max(this->num_cells * 6, 24)
-    )
+    std::make_pair<std::string, types::short_whole_num>("S. No", 7),
+    std::make_pair<std::string, types::short_whole_num>("Rules", std::max(this->num_cells * 6, 24))
   };
 
   utils::general::print_header(headings);
@@ -628,25 +626,17 @@ models::binary_1d_ca::print_isomorphisms() const
         {
           #pragma omp critical
           {
-            std::string rules_str{
-              utils::vector::to_string<types::long_whole_num>(local_rules)
-            };
+            std::string rules_str{utils::vector::to_string<types::long_whole_num>(local_rules)};
 
             std::vector<std::pair<std::string, types::short_whole_num>> entries{
-              std::make_pair<std::string, types::short_whole_num>(
-                std::to_string(++counter), 7
-              ),
-              std::make_pair<std::string &, types::short_whole_num>(
-                rules_str, std::max(this->num_cells * 6, 24)
-              )
+              std::make_pair<std::string, types::short_whole_num>(std::to_string(++counter), 7),
+              std::make_pair<std::string &, types::short_whole_num>(rules_str, std::max(this->num_cells * 6, 24))
             };
 
             utils::general::print_row(entries);
           }
         }
-      } while (
-        std::next_permutation(local_permutation.begin() + 1, local_permutation.end())
-      );
+      } while (std::next_permutation(local_permutation.begin() + 1, local_permutation.end()));
     }
   }
 }
@@ -655,43 +645,22 @@ void
 models::binary_1d_ca::print_details() const
 {
   std::vector<std::pair<std::string, types::short_whole_num>> headings{
-    std::make_pair<std::string, types::short_whole_num>(
-      "num_cells", 9
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      "l_radius", 8
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      "r_radius", 8
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      "boundary", 9
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      "rules", std::max(this->num_cells * 6, 24)
-    )
+    std::make_pair<std::string, types::short_whole_num>("Num Cells", 9),
+    std::make_pair<std::string, types::short_whole_num>("L Radius", 8),
+    std::make_pair<std::string, types::short_whole_num>("R Radius", 8),
+    std::make_pair<std::string, types::short_whole_num>("Boundary", 9),
+    std::make_pair<std::string, types::short_whole_num>("Rules", std::max(this->num_cells * 6, 24))
   };
 
   utils::general::print_header(headings);
-
   std::string rules_str{this->rule_vector.to_string()};
 
   std::vector<std::pair<std::string, types::short_whole_num>> entries{
-    std::make_pair<std::string, types::short_whole_num>(
-      std::to_string(this->num_cells), 9
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      std::to_string(this->l_radius), 8
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      std::to_string(this->r_radius), 8
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      get_boundary_str(this->boundary), 9
-    ),
-    std::make_pair<const std::string &, types::short_whole_num>(
-      rules_str, std::max(this->num_cells * 6, 24)
-    )
+    std::make_pair<std::string, types::short_whole_num>(std::to_string(this->num_cells), 9),
+    std::make_pair<std::string, types::short_whole_num>(std::to_string(this->l_radius), 8),
+    std::make_pair<std::string, types::short_whole_num>(std::to_string(this->r_radius), 8),
+    std::make_pair<std::string, types::short_whole_num>(get_boundary_str(this->boundary), 9),
+    std::make_pair<const std::string &, types::short_whole_num>(rules_str, std::max(this->num_cells * 6, 24))
   };
 
   utils::general::print_row(entries);
@@ -710,17 +679,13 @@ models::binary_1d_ca::print_complemented_isomorphisms() const
   {
     if (!this->has_complemented_isomorphisms())
     {
-      utils::general::print_msg("no complemented isomorphisms", colors::blue);
+      utils::general::print_msg("No complemented isomorphisms", colors::blue);
       return;
     }
 
     std::vector<std::pair<std::string, types::short_whole_num>> headings{
-      std::make_pair<std::string, types::short_whole_num>(
-        "s. no", 7
-      ),
-      std::make_pair<std::string, types::short_whole_num>(
-        "rules", std::max(this->num_cells * 6, 24)
-      )
+      std::make_pair<std::string, types::short_whole_num>("S. No", 7),
+      std::make_pair<std::string, types::short_whole_num>("Rules", std::max(this->num_cells * 6, 24))
     };
 
     utils::general::print_header(headings);
@@ -729,11 +694,7 @@ models::binary_1d_ca::print_complemented_isomorphisms() const
     {
       types::short_whole_num current_cell{};
       types::short_whole_num current_index{i};
-
-      types::short_whole_num index_mask{
-        static_cast<types::short_whole_num>((1U << this->num_cells) - 1)
-      };
-
+      types::short_whole_num index_mask{static_cast<types::short_whole_num>((1U << this->num_cells) - 1)};
       types::rules current_rules{};
 
       while (index_mask)
@@ -774,22 +735,20 @@ models::binary_1d_ca::print_complemented_isomorphisms() const
 void
 models::binary_1d_ca::print_reversed_isomorphisms() const
 {
-  std::vector<std::unordered_set<types::short_whole_num>> cycles{
-    utils::transition_graph::get_cycles(this->get_graph())
-  };
+  types::cycles cycles{utils::transition_graph::get_cycles(this->get_graph())};
 
   if (cycles.size() == 0)
   {
-    utils::general::print_msg("no cycles to reverse", colors::yellow);
+    utils::general::print_msg("No cycles to reverse", colors::yellow);
     return;
   }
 
   std::vector<std::pair<std::string, types::short_whole_num>> headings{
     std::make_pair<std::string, types::short_whole_num>(
-      "pattern", std::max(static_cast<types::num>(cycles.size()), 7)
+      "Pattern", std::max(static_cast<types::num>(cycles.size()), 7)
     ),
     std::make_pair<std::string, types::short_whole_num>(
-      "rules", std::max(this->num_cells * 6, 24)
+      "Rules", std::max(this->num_cells * 6, 24)
     )
   };
 
@@ -802,16 +761,11 @@ models::binary_1d_ca::print_reversed_isomorphisms() const
   for (types::long_whole_num i{}; i < (1UL << cycles.size()); i++)
   {
     bool is_non_trivial{};
-
     types::transition_graph current_graph(this->num_configs, USHRT_MAX);
     types::rules current_rules(this->num_cells, 0);
-
-    types::long_whole_num current_index{i};
     types::short_whole_num current_cycle{};
-
-    types::long_whole_num index_mask{
-      static_cast<types::long_whole_num>((1UL << cycles.size()) - 1)
-    };
+    types::long_whole_num current_index{i};
+    types::long_whole_num index_mask{static_cast<types::long_whole_num>((1UL << cycles.size()) - 1)};
 
     while (index_mask)
     {
@@ -860,7 +814,6 @@ models::binary_1d_ca::print_reversed_isomorphisms() const
           utils::number::to_binary_str(i, cycles.size()),
           std::max(static_cast<types::num>(cycles.size()), 7)
         ),
-
         std::make_pair<std::string, types::short_whole_num>(
           utils::vector::to_string<types::long_whole_num>(current_rules),
           std::max(this->num_cells * 6, 24)
@@ -879,7 +832,7 @@ models::binary_1d_ca::print_reversed_isomorphisms() const
 
   if (!header_printed)
   {
-    utils::general::print_msg("no non-trivial reversed isomorphisms", colors::blue);
+    utils::general::print_msg("No non-trivial reversed isomorphisms", colors::blue);
   }
 }
 
@@ -890,7 +843,7 @@ models::binary_1d_ca::print_characterisitc_matrix() const
   {
     if (!this->is_elementary())
     {
-      throw std::domain_error{"charactersitic matrix is only supported for ECAs"};
+      throw std::domain_error{"Charactersitic matrix is only supported for ECAs"};
     }
 
     utils::matrix::print(this->rule_vector.get_characteristic_matrix(this->boundary));
@@ -908,7 +861,7 @@ models::binary_1d_ca::print_characterisitc_polynomial() const
   {
     if (!this->is_elementary())
     {
-      throw std::domain_error{"characteristic polynomial is only supported for ECAs"};
+      throw std::domain_error{"Characteristic polynomial is only supported for ECAs"};
     }
 
     utils::polynomial::print(this->rule_vector.get_charactersitic_polynomial(this->boundary));
@@ -932,35 +885,24 @@ models::binary_1d_ca::print_rmts_complemented_rules() const
     throw std::domain_error{"RMTs complemented rules are only supported for reversible ECAs"};
   }
 
-  static std::vector<std::vector<types::short_whole_num>> equivalent_rmts{
-    {0, 4}, {1, 5}, {2, 6}, {3, 7}
-  };
+  static std::vector<std::vector<types::short_whole_num>> equivalent_rmts{{0, 4}, {1, 5}, {2, 6}, {3, 7}};
 
   std::vector<std::pair<std::string, types::short_whole_num>> headings{
-    std::make_pair<std::string, types::short_whole_num>(
-      "s. no", 7
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      "cell", 4
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      "complemented RMTs", 17
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      "rules", std::max(this->num_cells * 6, 24)
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      "isomorphic", 10
-    )
+    std::make_pair<std::string, types::short_whole_num>("S. No", 7),
+    std::make_pair<std::string, types::short_whole_num>("Cell", 4),
+    std::make_pair<std::string, types::short_whole_num>("Complemented RMTs", 17),
+    std::make_pair<std::string, types::short_whole_num>("Rules", std::max(this->num_cells * 6, 24)),
+    std::make_pair<std::string, types::short_whole_num>("Isomorphic", 10)
   };
 
   utils::general::print_header(headings);
 
   for (types::short_whole_num i{}; i < this->num_cells; i++)
   {
-    std::string current_rule_str{
-      utils::number::to_binary_str(this->rule_vector.at(i), 1U << this->num_neighbors)
-    };
+    std::string current_rule_str{utils::number::to_binary_str(
+      this->rule_vector.at(i),
+      1U << this->num_neighbors
+    )};
 
     for (types::short_whole_num j{}; j < (1 << equivalent_rmts.size()); j++)
     {
@@ -970,9 +912,9 @@ models::binary_1d_ca::print_rmts_complemented_rules() const
       types::short_whole_num current_index{j};
       types::short_whole_num current_rmt_group{};
 
-      types::short_whole_num index_mask{
-        static_cast<types::short_whole_num>((1U << equivalent_rmts.size()) - 1)
-      };
+      types::short_whole_num index_mask{static_cast<types::short_whole_num>(
+        (1U << equivalent_rmts.size()) - 1
+      )};
 
       while (index_mask)
       {
@@ -992,17 +934,14 @@ models::binary_1d_ca::print_rmts_complemented_rules() const
 
       for (types::short_whole_num k{}; k < rmts_to_complement.size(); k++)
       {
-        types::short_whole_num str_index{
-          static_cast<types::short_whole_num>(current_rule_str.size() - rmts_to_complement.at(k) - 1)
-        };
+        types::short_whole_num str_index{static_cast<types::short_whole_num>(
+          current_rule_str.size() - rmts_to_complement.at(k) - 1
+        )};
 
         rmts_complemented_rule_str.at(str_index) = current_rule_str.at(str_index) == '1' ? '0' : '1';
       }
 
-      types::long_whole_num rmts_complemented_rule{
-        utils::number::parse_binary_str(rmts_complemented_rule_str)
-      };
-
+      types::long_whole_num rmts_complemented_rule{utils::number::parse_binary_str(rmts_complemented_rule_str)};
       models::rule_vector rmts_complemented_rule_vector{this->get_rule_vector()};
       rmts_complemented_rule_vector.at(i) = rmts_complemented_rule;
 
@@ -1028,7 +967,76 @@ models::binary_1d_ca::print_rmts_complemented_rules() const
           rmts_complemented_rule_vector.to_string(), std::max(this->num_cells * 6, 24)
         ),
         std::make_pair<std::string, types::short_whole_num>(
-          is_isomorphic ? "true" : "false", 10
+          is_isomorphic ? "True" : "False", 10
+        )
+      };
+
+      utils::general::print_row(entries);
+    }
+  }
+}
+
+void
+models::binary_1d_ca::tweak_rules() const
+{
+  if (!this->is_reversible() || !this->is_elementary())
+  {
+    throw std::domain_error{"Rule tweaking is only supported for reversible ECAs"};
+  }
+
+  types::short_whole_num counter{};
+  types::short_whole_num num_cycles_affected{};
+  models::binary_1d_ca current_ca{};
+  std::unordered_set<types::short_whole_num> affected_configs{};
+
+  std::vector<std::pair<std::string, types::short_whole_num>> headings{
+    std::make_pair<std::string, types::short_whole_num>("S. No", 7),
+    std::make_pair<std::string, types::short_whole_num>("Rules", std::max(this->num_cells * 6, 24)),
+    std::make_pair<std::string, types::short_whole_num>("Isomorphic", 10),
+    std::make_pair<std::string, types::short_whole_num>("Configs Affected", 16),
+    std::make_pair<std::string, types::short_whole_num>("Cycles Affected", 15)
+  };
+
+  utils::general::print_header(headings);
+
+  for (types::short_whole_num i{}; i < this->num_cells; i++)
+  {
+    for (types::short_num j{-10}; j <= 10; j++)
+    {
+      if (j == 0)
+      {
+        continue;
+      }
+
+      types::rules tweaked_rules{this->get_rule_vector().get_rules()};
+      tweaked_rules.at(i) = (tweaked_rules.at(i) + 256 + j) % 256;
+
+      current_ca = models::binary_1d_ca{
+        this->num_cells,
+        this->l_radius,
+        this->r_radius,
+        this->boundary,
+        tweaked_rules
+      };
+
+      bool is_isomorphic{this->has_cycle_strucutre_as(current_ca)};
+      affected_configs = this->get_affected_configs(current_ca, num_cycles_affected);
+
+      std::vector<std::pair<std::string, types::short_whole_num>> entries{
+        std::make_pair<std::string, types::short_whole_num>(
+          std::to_string(++counter), 7
+        ),
+        std::make_pair<std::string, types::short_whole_num>(
+          utils::vector::to_string(tweaked_rules), std::max(this->num_cells * 6, 24)
+        ),
+        std::make_pair<std::string, types::short_whole_num>(
+          is_isomorphic ? "True" : "False", 10
+        ),
+        std::make_pair<std::string, types::short_whole_num>(
+          std::to_string(affected_configs.size()), 16
+        ),
+        std::make_pair<std::string, types::short_whole_num>(
+          std::to_string(num_cycles_affected), 15
         )
       };
 
@@ -1040,9 +1048,10 @@ models::binary_1d_ca::print_rmts_complemented_rules() const
 void
 models::binary_1d_ca::update_config()
 {
-  std::string current_config_str{
-    utils::number::to_binary_str(this->get_current_config(), this->num_cells)
-  };
+  std::string current_config_str{utils::number::to_binary_str(
+    this->get_current_config(),
+    this->num_cells
+  )};
 
   for (types::short_whole_num i{}; i < this->num_cells; i++)
   {

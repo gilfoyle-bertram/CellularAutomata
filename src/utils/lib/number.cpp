@@ -8,7 +8,7 @@ utils::number::get_random_num(types::short_whole_num min, types::short_whole_num
 {
   if (min > max)
   {
-    throw std::invalid_argument{"invalid range for random number generation"};
+    throw std::invalid_argument{"Invalid range for random number generation"};
   }
 
   if (min == max)
@@ -17,7 +17,6 @@ utils::number::get_random_num(types::short_whole_num min, types::short_whole_num
   }
 
   types::short_whole_num range{static_cast<types::short_whole_num>(max - min + 1)};
-
   return rand() % range + min;
 }
 
@@ -42,11 +41,10 @@ utils::number::to_string(
 {
   if (base > 10)
   {
-    throw std::invalid_argument{"unsupported base for conversion"};
+    throw std::invalid_argument{"Unsupported base for conversion"};
   }
 
   static std::string symbols{"0123456789"};
-
   std::string remainders{};
   std::ostringstream out_stream{};
 
@@ -60,11 +58,10 @@ utils::number::to_string(
 
   if (padding < 0)
   {
-    throw std::overflow_error{"base conversion failed due to overflow"};
+    throw std::overflow_error{"Base conversion failed due to overflow"};
   }
 
   out_stream << std::string(padding, '0');
   out_stream << std::string(remainders.rbegin(), remainders.rend());
-
   return out_stream.str();
 }

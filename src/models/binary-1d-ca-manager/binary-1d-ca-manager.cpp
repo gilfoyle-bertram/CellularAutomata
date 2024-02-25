@@ -12,15 +12,14 @@ types::short_whole_num
 models::binary_1d_ca_manager::read_num_cells()
 {
   types::short_whole_num num_cells{};
-
   std::cout << "\n";
 
-  std::cout << "no. of cells (max: " << (models::binary_1d_ca::max_size) << " cells): ";
+  std::cout << "No. of cells (max: " << (models::binary_1d_ca::max_size) << " cells): ";
   std::cin >> num_cells;
 
   if (num_cells > models::binary_1d_ca::max_size)
   {
-    throw std::invalid_argument{"unsupported cellular automata size"};
+    throw std::invalid_argument{"Unsupported cellular automata size"};
   }
 
   return num_cells;
@@ -30,10 +29,9 @@ types::boundary
 models::binary_1d_ca_manager::read_boundary()
 {
   char boundary_char{};
-
   std::cout << "\n";
 
-  std::cout << "boundary condition [(n)ull / (p)eriodic]: ";
+  std::cout << "Boundary condition [(n)ull / (p)eriodic]: ";
   std::cin >> boundary_char;
 
   if (boundary_char == 'n' || boundary_char == 'N')
@@ -46,8 +44,7 @@ models::binary_1d_ca_manager::read_boundary()
     return types::boundary::periodic;
   }
 
-  utils::general::print_msg("err: invalid boundary condition\n     try again", colors::red);
-
+  utils::general::print_msg("ERR: Invalid boundary condition\n     Try again", colors::red);
   return read_boundary();
 }
 
@@ -56,14 +53,12 @@ models::binary_1d_ca_manager::read_rules(types::short_whole_num num_rules)
 {
   types::long_whole_num rule{};
   types::rules rules(num_rules, 0);
-
   std::cout << "\n";
 
   for (types::short_whole_num i{0}; i < num_rules; ++i)
   {
-    std::cout << "rule for cell-" << (i + 1) << ": ";
+    std::cout << "Rule for cell-" << (i + 1) << ": ";
     std::cin >> rule;
-
     rules.at(i) = rule;
   }
 
@@ -83,18 +78,10 @@ models::binary_1d_ca_manager::print_reversed_isomorphable_ecas()
   models::binary_1d_ca current_ca{};
 
   std::vector<std::pair<std::string, types::short_whole_num>> headings{
-    std::make_pair<std::string, types::short_whole_num>(
-      "s. no", 7
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      "rules", std::max(num_cells * 6, 24)
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      "trivial_partition", 17
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      "non_trivial_partitions", 22
-    )
+    std::make_pair<std::string, types::short_whole_num>("S. No", 7),
+    std::make_pair<std::string, types::short_whole_num>("Rules", std::max(num_cells * 6, 24)),
+    std::make_pair<std::string, types::short_whole_num>("Trivial Partition", 17),
+    std::make_pair<std::string, types::short_whole_num>("Non Trivial Partitions", 22)
   };
 
   for (types::short_whole_num i{}; i < 1000; i++)
@@ -120,10 +107,10 @@ models::binary_1d_ca_manager::print_reversed_isomorphable_ecas()
           std::max(num_cells * 6, 24)
         ),
         std::make_pair<std::string, types::short_whole_num>(
-          has_trivial_partition ? "true" : "false", 17
+          has_trivial_partition ? "True" : "False", 17
         ),
         std::make_pair<std::string, types::short_whole_num>(
-          has_non_trivial_partitions ? "true" : "false", 22
+          has_non_trivial_partitions ? "True" : "False", 22
         )
       };
 
@@ -133,7 +120,7 @@ models::binary_1d_ca_manager::print_reversed_isomorphable_ecas()
 
   if (!header_printed)
   {
-    utils::general::print_msg("couldn't generate any required ECAs", colors::blue);
+    utils::general::print_msg("Couldn't generate any required ECAs", colors::blue);
   }
 }
 
@@ -148,12 +135,8 @@ models::binary_1d_ca_manager::print_single_cycle_reversible_ecas()
   models::binary_1d_ca current_ca{};
 
   std::vector<std::pair<std::string, types::short_whole_num>> headings{
-    std::make_pair<std::string, types::short_whole_num>(
-      "s. no", 7
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      "rules", std::max(num_cells * 6, 24)
-    )
+    std::make_pair<std::string, types::short_whole_num>("S. No", 7),
+    std::make_pair<std::string, types::short_whole_num>("Rules", std::max(num_cells * 6, 24))
   };
 
   for (types::short_whole_num i{}; i < 1000; i++)
@@ -173,8 +156,7 @@ models::binary_1d_ca_manager::print_single_cycle_reversible_ecas()
           std::to_string(++counter), 7
         ),
         std::make_pair<std::string, types::short_whole_num>(
-          current_ca.get_rule_vector().to_string(),
-          std::max(num_cells * 6, 24)
+          current_ca.get_rule_vector().to_string(), std::max(num_cells * 6, 24)
         )
       };
 
@@ -184,7 +166,7 @@ models::binary_1d_ca_manager::print_single_cycle_reversible_ecas()
 
   if (!header_printed)
   {
-    utils::general::print_msg("couldn't generate any required ECAs", colors::blue);
+    utils::general::print_msg("Couldn't generate any required ECAs", colors::blue);
   }
 }
 
@@ -194,16 +176,11 @@ models::binary_1d_ca_manager::print_reversible_ecas()
   types::short_whole_num counter{};
   types::short_whole_num num_cells{models::binary_1d_ca_manager::read_num_cells()};
   types::boundary boundary{models::binary_1d_ca_manager::read_boundary()};
-
   models::binary_1d_ca current_ca{};
 
   std::vector<std::pair<std::string, types::short_whole_num>> headings{
-    std::make_pair<std::string, types::short_whole_num>(
-      "s. no", 7
-    ),
-    std::make_pair<std::string, types::short_whole_num>(
-      "rules", std::max(num_cells * 6, 24)
-    )
+    std::make_pair<std::string, types::short_whole_num>("S. No", 7),
+    std::make_pair<std::string, types::short_whole_num>("Rules", std::max(num_cells * 6, 24))
   };
 
   utils::general::print_header(headings);
@@ -230,19 +207,17 @@ void
 models::binary_1d_ca_manager::read_ca_details()
 {
   types::short_whole_num num_cells{models::binary_1d_ca_manager::read_num_cells()};
-
   types::short_whole_num l_radius{};
   types::short_whole_num r_radius{};
 
-  std::cout << "left radius: ";
+  std::cout << "Left radius: ";
   std::cin >> l_radius;
 
-  std::cout << "right radius: ";
+  std::cout << "Right radius: ";
   std::cin >> r_radius;
 
   types::boundary boundary{models::binary_1d_ca_manager::read_boundary()};
   types::rules rules{models::binary_1d_ca_manager::read_rules(num_cells)};
-
   this->current_ca = models::binary_1d_ca{num_cells, l_radius, r_radius, boundary, rules};
 }
 
@@ -253,16 +228,17 @@ models::binary_1d_ca_manager::access_system()
   bool run_system{true};
 
   std::vector<std::string> choices{
-    "print transition graph",
-    "print CA details",
-    "print isomorphisms (exhaustive)",
-    "check isomorphism (exhaustive)",
-    "print complemented isomorphisms",
-    "print reversed isomorphisms",
-    "print characteristic matrix",
-    "print characteristic polynomial",
-    "print CAs by complementing rules based on equivalent RMTs",
-    "go back"
+    "Print transition graph",
+    "Print CA details",
+    "Print isomorphisms (exhaustive)",
+    "Check isomorphism (exhaustive)",
+    "Print complemented isomorphisms",
+    "Print reversed isomorphisms",
+    "Print characteristic matrix",
+    "Print characteristic polynomial",
+    "Print CAs by complementing rules based on equivalent RMTs",
+    "Print affected configurations by tweaking rules",
+    "Go back"
   };
 
   while (run_system)
@@ -292,16 +268,15 @@ models::binary_1d_ca_manager::access_system()
         types::short_whole_num r_radius{this->current_ca.get_r_radius()};
         types::boundary boundary{this->current_ca.get_boundary()};
         types::rules rules{read_rules(num_cells)};
-
         models::binary_1d_ca other{num_cells, l_radius, r_radius, boundary, rules};
 
         if (this->current_ca.is_isomorphic(other))
         {
-          utils::general::print_msg("isomorphic", colors::cyan);
+          utils::general::print_msg("Isomorphic", colors::cyan);
         }
         else
         {
-          utils::general::print_msg("not isomorphic", colors::blue);
+          utils::general::print_msg("Not isomorphic", colors::blue);
         }
 
         break;
@@ -329,6 +304,11 @@ models::binary_1d_ca_manager::access_system()
 
       case 9: {
         this->current_ca.print_rmts_complemented_rules();
+        break;
+      }
+
+      case 10: {
+        this->current_ca.tweak_rules();
         break;
       }
 

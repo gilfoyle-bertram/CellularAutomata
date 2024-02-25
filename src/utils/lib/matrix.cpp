@@ -10,7 +10,6 @@ utils::matrix::is_square(const types::matrix &A)
 {
   types::short_whole_num rows{static_cast<types::short_whole_num>(A.size())};
   types::short_whole_num cols{static_cast<types::short_whole_num>(A.at(0).size())};
-
   return rows == cols;
 }
 
@@ -19,7 +18,6 @@ utils::matrix::can_add(const types::matrix &A, const types::matrix &B)
 {
   types::short_whole_num a_rows{static_cast<types::short_whole_num>(A.size())};
   types::short_whole_num b_rows{static_cast<types::short_whole_num>(B.size())};
-
   types::short_whole_num a_cols{static_cast<types::short_whole_num>(A.at(0).size())};
   types::short_whole_num b_cols{static_cast<types::short_whole_num>(B.at(0).size())};
 
@@ -31,7 +29,6 @@ utils::matrix::can_multiply(const types::matrix &A, const types::matrix &B)
 {
   types::short_whole_num a_cols{static_cast<types::short_whole_num>(A.at(0).size())};
   types::short_whole_num b_rows{static_cast<types::short_whole_num>(B.size())};
-
   return a_cols == b_rows;
 }
 
@@ -42,7 +39,7 @@ utils::matrix::get_trace(const types::matrix &A)
 
   if (!utils::matrix::is_square(A))
   {
-    throw std::domain_error{"cannot compute trace of a non-square matrix"};
+    throw std::domain_error{"Cannot compute trace of a non-square matrix"};
   }
 
   types::short_whole_num size{static_cast<types::short_whole_num>(A.size())};
@@ -75,12 +72,11 @@ utils::matrix::add(const types::matrix &A, const types::matrix &B)
 {
   if (!utils::matrix::can_add(A, B))
   {
-    throw std::domain_error{"matrices incompatible for addition"};
+    throw std::domain_error{"Matrices incompatible for addition"};
   }
 
   types::short_whole_num rows{static_cast<types::short_whole_num>(A.size())};
   types::short_whole_num cols{static_cast<types::short_whole_num>(A.at(0).size())};
-
   types::matrix C{};
   C.resize(rows);
 
@@ -102,13 +98,12 @@ utils::matrix::multiply(const types::matrix &A, const types::matrix &B)
 {
   if (!utils::matrix::can_multiply(A, B))
   {
-    throw std::domain_error{"matrices incompatible for multiplication"};
+    throw std::domain_error{"Matrices incompatible for multiplication"};
   }
 
   types::short_whole_num a_rows{static_cast<types::short_whole_num>(A.size())};
   types::short_whole_num a_cols{static_cast<types::short_whole_num>(A.at(0).size())};
   types::short_whole_num b_cols{static_cast<types::short_whole_num>(B.at(0).size())};
-
   types::matrix C{};
   C.resize(a_rows);
 
@@ -133,7 +128,6 @@ utils::matrix::scalar_multiply(const types::matrix &A, types::short_num x)
 {
   types::short_whole_num rows{static_cast<types::short_whole_num>(A.size())};
   types::short_whole_num cols{static_cast<types::short_whole_num>(A.at(0).size())};
-
   types::matrix x_A{};
   x_A.resize(rows);
 
@@ -157,12 +151,11 @@ utils::matrix::get_characteristic_polynomial(const types::matrix &A)
 {
   if (!utils::matrix::is_square(A))
   {
-    throw std::domain_error{"cannot compute characteristic polynoial of a non-square matrix"};
+    throw std::domain_error{"Cannot compute characteristic polynoial of a non-square matrix"};
   }
 
   types::short_whole_num size{static_cast<types::short_whole_num>(A.size())};
   types::polynomial coeffs{};
-
   types::matrix C{A};
   types::matrix I{utils::matrix::get_identity(size)};
 
@@ -196,7 +189,6 @@ std::string
 utils::matrix::to_string(const types::matrix &A)
 {
   std::ostringstream out_stream{};
-
   types::short_whole_num rows{static_cast<types::short_whole_num>(A.size())};
   types::short_whole_num cols{static_cast<types::short_whole_num>(A.at(0).size())};
 

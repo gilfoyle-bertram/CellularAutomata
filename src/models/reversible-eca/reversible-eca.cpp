@@ -182,13 +182,12 @@ static const std::unordered_map<types::boundary, std::vector<types::rules>> last
 static types::long_whole_num
 get_first_cell_rule(types::boundary boundary, types::short_whole_num &next_group_index)
 {
-  types::short_whole_num group_index{
-    utils::number::get_random_num(0, first_cell_rule_groups.at(boundary).size() - 1)
-  };
+  types::short_whole_num group_index{utils::number::get_random_num(
+    0, first_cell_rule_groups.at(boundary).size() - 1
+  )};
 
   const types::rules &selected_rules{first_cell_rule_groups.at(boundary).at(group_index).first};
   next_group_index = first_cell_rule_groups.at(boundary).at(group_index).second;
-
   return selected_rules.at(utils::number::get_random_num(0, selected_rules.size() - 1));
 }
 
@@ -209,7 +208,6 @@ get_regular_cell_rule(
 
   const types::rules &selected_rules{sub_groups.at(sub_group_index).first};
   next_group_index = sub_groups.at(sub_group_index).second;
-
   return selected_rules.at(utils::number::get_random_num(0, selected_rules.size() - 1));
 }
 
@@ -225,17 +223,16 @@ models::reversible_eca::get_random(types::short_whole_num size, types::boundary 
 {
   if (size < 3)
   {
-    throw std::invalid_argument{"minimum size of ECA should be 3"};
+    throw std::invalid_argument{"Minimum size of ECA should be 3"};
   }
 
   if (size > models::binary_1d_ca::max_size)
   {
-    throw std::invalid_argument{"unsupported cellular automata size"};
+    throw std::invalid_argument{"Unsupported cellular automata size"};
   }
 
   types::rules random_rules(size, 0);
   types::short_whole_num next_group_index{};
-
   random_rules.at(0) = get_first_cell_rule(boundary, next_group_index);
 
   for (types::short_whole_num i{1}; i < size - 1; i++)

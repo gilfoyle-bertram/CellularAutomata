@@ -11,7 +11,7 @@ utils::polynomial::to_string(const types::polynomial &coeffs)
 
   if (degree < 0)
   {
-    throw std::invalid_argument{"invalid polynomial (-ve degree)"};
+    throw std::invalid_argument{"Invalid polynomial (-ve degree)"};
   }
 
   while (degree > 0 && coeffs.at(degree) == 0)
@@ -21,7 +21,7 @@ utils::polynomial::to_string(const types::polynomial &coeffs)
 
   if (degree == 0 && coeffs.at(degree) == 0)
   {
-    return "zero polynomial";
+    return "Zero polynomial";
   }
 
   for (types::short_num n{degree}; n >= 0; n--)

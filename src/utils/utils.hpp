@@ -111,7 +111,7 @@ namespace utils::polynomial
 
 namespace utils::transition_graph
 {
-  std::vector<std::unordered_set<types::short_whole_num>>
+  types::cycles
   get_cycles(const types::transition_graph &graph);
 
   void

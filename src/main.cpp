@@ -22,12 +22,12 @@ class controller
       bool run_system{true};
 
       static std::vector<std::string> choices{
-        "print complementable linear ECAs",
-        "print random ECAs with non-trivial reversed isomorphisms",
-        "print random single cycle reversible ECAs",
-        "print random reversible ECAs",
-        "feed CA details manually",
-        "exit"
+        "Print complementable linear ECAs",
+        "Print random ECAs with non-trivial reversed isomorphisms",
+        "Print random single cycle reversible ECAs",
+        "Print random reversible ECAs",
+        "Feed CA details manually",
+        "Exit"
       };
 
       while (run_system)

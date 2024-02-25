@@ -66,9 +66,9 @@ get_complementable_rule_vectors(types::short_whole_num size, types::boundary bou
 {
   std::vector<std::pair<models::rule_vector, types::polynomial>> result{};
 
-  types::whole_num max_rule_vectors{
-    static_cast<types::whole_num>(std::pow(linear_rules.size(), size))
-  };
+  types::whole_num max_rule_vectors{static_cast<types::whole_num>(
+    std::pow(linear_rules.size(), size)
+  )};
 
   #pragma omp parallel
   {
@@ -94,7 +94,8 @@ get_complementable_rule_vectors(types::short_whole_num size, types::boundary bou
         #pragma omp critical
         {
           result.push_back(std::make_pair<models::rule_vector &, types::polynomial &>(
-            current_rule_vector, current_coeffs
+            current_rule_vector,
+            current_coeffs
           ));
         }
       }
@@ -122,7 +123,6 @@ void
 models::rule_vector::print_complementable_rule_vectors()
 {
   types::whole_num counter{};
-
   types::short_whole_num num_cells{models::binary_1d_ca_manager::read_num_cells()};
   types::boundary boundary{models::binary_1d_ca_manager::read_boundary()};
 
@@ -133,22 +133,16 @@ models::rule_vector::print_complementable_rule_vectors()
   if (!result.empty())
   {
     std::vector<std::pair<std::string, types::short_whole_num>> headings{
-      std::make_pair<std::string, types::short_whole_num>(
-        "s. no", 7
-      ),
-      std::make_pair<std::string, types::short_whole_num>(
-        "rules", std::max(num_cells * 6, 24)
-      ),
-      std::make_pair<std::string, types::short_whole_num>(
-        "polynomial", std::max(num_cells * 6, 24)
-      ),
+      std::make_pair<std::string, types::short_whole_num>("S. No", 7),
+      std::make_pair<std::string, types::short_whole_num>("Rules", std::max(num_cells * 6, 24)),
+      std::make_pair<std::string, types::short_whole_num>("Polynomial", std::max(num_cells * 6, 24)),
     };
 
     utils::general::print_header(headings);
   }
   else
   {
-    utils::general::print_msg("no complementable linear ECAs", colors::blue);
+    utils::general::print_msg("No complementable linear ECAs", colors::blue);
     return;
   }
 
@@ -231,7 +225,7 @@ models::rule_vector::get_characteristic_matrix(types::boundary boundary) const
 {
   if (!this->is_additive())
   {
-    throw std::domain_error{"cannot represent non-additive rule vector as characteristic matrix"};
+    throw std::domain_error{"Cannot represent non-additive rule vector as characteristic matrix"};
   }
 
   bool is_null_boundary{boundary == types::boundary::null};
