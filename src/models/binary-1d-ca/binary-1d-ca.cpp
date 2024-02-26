@@ -1001,15 +1001,19 @@ models::binary_1d_ca::tweak_rules() const
 
   for (types::short_whole_num i{}; i < this->num_cells; i++)
   {
-    for (types::short_num j{-10}; j <= 10; j++)
+    for (types::short_num j{}; j < (1U << this->num_neighbors); j++)
     {
-      if (j == 0)
-      {
-        continue;
-      }
+      std::string current_rule_str{utils::number::to_binary_str(
+        this->rule_vector.at(i),
+        1U << this->num_neighbors
+      )};
 
+      std::string tweaked_rule_str{current_rule_str};
+      tweaked_rule_str.at(j) = current_rule_str.at(j) == '1' ? '0' : '1';
+
+      types::long_whole_num tweaked_rule{utils::number::parse_binary_str(tweaked_rule_str)};
       types::rules tweaked_rules{this->get_rule_vector().get_rules()};
-      tweaked_rules.at(i) = (tweaked_rules.at(i) + 256 + j) % 256;
+      tweaked_rules.at(i) = tweaked_rule;
 
       current_ca = models::binary_1d_ca{
         this->num_cells,
