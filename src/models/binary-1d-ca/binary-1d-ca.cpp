@@ -320,6 +320,29 @@ models::binary_1d_ca::fill_transition_graph()
   }
 }
 
+void
+models::binary_1d_ca::fill_sn_maps()
+{
+  this->sn_maps.resize(this->num_cells);
+
+  for (types::short_whole_num i{}; i < this->num_cells; i++)
+  {
+    this->sn_maps.at(i).insert(std::make_pair<char, std::unordered_set<std::string>>('0', {}));
+    this->sn_maps.at(i).insert(std::make_pair<char, std::unordered_set<std::string>>('1', {}));
+  }
+
+  for (const auto &config : this->graph)
+  {
+    std::string config_str{utils::number::to_binary_str(config, this->num_cells)};
+    std::string next_config_str{utils::number::to_binary_str(this->graph.at(config), this->num_cells)};
+
+    for (types::short_whole_num i{}; i < this->num_cells; i++)
+    {
+      this->sn_maps.at(i).at(config_str.at(i)).insert(this->get_neighborhood_str(i, next_config_str));
+    }
+  }
+}
+
 models::binary_1d_ca::binary_1d_ca()
 {
 }
@@ -347,6 +370,7 @@ models::binary_1d_ca::binary_1d_ca(
   this->set_rules(rules);
   this->randomize_config();
   this->fill_transition_graph();
+  this->fill_sn_maps();
 }
 
 types::short_whole_num
@@ -389,6 +413,12 @@ const types::transition_graph &
 models::binary_1d_ca::get_graph() const
 {
   return this->graph;
+}
+
+const std::vector<types::sn_map> &
+models::binary_1d_ca::get_sn_maps() const
+{
+  return this->sn_maps;
 }
 
 const models::rule_vector &
@@ -670,6 +700,33 @@ void
 models::binary_1d_ca::print_transition_graph() const
 {
   utils::transition_graph::print(this->get_graph());
+}
+
+void
+models::binary_1d_ca::print_sn_maps() const
+{
+  for (types::short_whole_num i{}; i < this->num_cells; i++)
+  {
+    std::ostringstream out_stream{};
+    types::sn_map current_map{this->get_sn_maps().at(i)};
+
+    out_stream << "Cell-" << (i + 1);
+
+    for (const auto &pair : current_map)
+    {
+      out_stream << "\n";
+      out_stream << pair.first << ": { ";
+
+      for (const auto &value : pair.second)
+      {
+        out_stream << value << " ";
+      }
+
+      out_stream << "}";
+    }
+
+    utils::general::print_msg(out_stream.str(), colors::yellow);
+  }
 }
 
 void

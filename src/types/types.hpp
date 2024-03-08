@@ -1,6 +1,8 @@
 #ifndef __TYPES__
 #define __TYPES__
 
+#include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -35,6 +37,7 @@ namespace types
   using transition_graph = std::vector<short_whole_num>;
 
   using rules_group = std::pair<types::rules, types::short_whole_num>;
+  using sn_map = std::unordered_map<char, std::unordered_set<std::string>>;
 }
 
 #endif

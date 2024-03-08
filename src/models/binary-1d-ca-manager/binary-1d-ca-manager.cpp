@@ -238,6 +238,7 @@ models::binary_1d_ca_manager::access_system()
     "Print characteristic polynomial",
     "Print CAs by complementing rules based on equivalent RMTs",
     "Print affected configurations by tweaking rules",
+    "Print state-neighborhood maps",
     "Go back"
   };
 
@@ -309,6 +310,11 @@ models::binary_1d_ca_manager::access_system()
 
       case 10: {
         this->current_ca.tweak_rules();
+        break;
+      }
+
+      case 11: {
+        this->current_ca.print_sn_maps();
         break;
       }
 

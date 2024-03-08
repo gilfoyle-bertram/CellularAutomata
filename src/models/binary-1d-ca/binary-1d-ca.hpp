@@ -22,6 +22,7 @@ namespace models
       types::short_whole_num r_radius{};
 
       std::vector<binary_cell> cells{};
+      std::vector<types::sn_map> sn_maps{};
 
       types::boundary boundary{};
       types::transition_graph graph{};
@@ -60,6 +61,9 @@ namespace models
       void
       fill_transition_graph();
 
+      void
+      fill_sn_maps();
+
     public:
       static const types::short_whole_num max_size{10};
       static const types::short_whole_num max_l_radius{2};
@@ -96,6 +100,9 @@ namespace models
       const types::transition_graph &
       get_graph() const;
 
+      const std::vector<types::sn_map> &
+      get_sn_maps() const;
+
       const models::rule_vector &
       get_rule_vector() const;
 
@@ -119,6 +126,9 @@ namespace models
 
       void
       print_transition_graph() const;
+
+      void
+      print_sn_maps() const;
 
       void
       print_complemented_isomorphisms() const;
