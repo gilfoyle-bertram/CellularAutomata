@@ -81,7 +81,8 @@ models::binary_1d_ca_manager::print_reversed_isomorphable_ecas()
     std::make_pair<std::string, types::short_whole_num>("S. No", 7),
     std::make_pair<std::string, types::short_whole_num>("Rules", std::max(num_cells * 6, 24)),
     std::make_pair<std::string, types::short_whole_num>("Trivial Partition", 17),
-    std::make_pair<std::string, types::short_whole_num>("Non Trivial Partitions", 22)
+    std::make_pair<std::string, types::short_whole_num>("Non Trivial Partitions", 22),
+    std::make_pair<std::string, types::short_whole_num>("1-1/1-N SN Maps", 15)
   };
 
   for (types::short_whole_num i{}; i < 1000; i++)
@@ -111,6 +112,9 @@ models::binary_1d_ca_manager::print_reversed_isomorphable_ecas()
         ),
         std::make_pair<std::string, types::short_whole_num>(
           has_non_trivial_partitions ? "True" : "False", 22
+        ),
+        std::make_pair<std::string, types::short_whole_num>(
+          current_ca.has_1_1_or_1_n_sn_maps() ? "True" : "False", 15
         )
       };
 

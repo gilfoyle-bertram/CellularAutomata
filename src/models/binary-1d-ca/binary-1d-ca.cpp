@@ -504,6 +504,20 @@ models::binary_1d_ca::is_isomorphic(const models::binary_1d_ca &other) const
 }
 
 bool
+models::binary_1d_ca::has_1_1_or_1_n_sn_maps() const
+{
+  for (types::short_whole_num i{}; i < this->num_cells; i++)
+  {
+    if (!utils::sn_map::is_1_1_or_1_n(this->get_sn_maps().at(i)))
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool
 models::binary_1d_ca::has_non_trivial_reversed_isomorphisms(
   bool &has_trivial_partition,
   bool &has_non_trivial_partitions
@@ -726,6 +740,14 @@ models::binary_1d_ca::print_sn_maps() const
     }
 
     utils::general::print_msg(out_stream.str(), colors::yellow);
+
+    out_stream.str("");
+    out_stream.clear();
+
+    out_stream << "Is 1-1 or 1-N: ";
+    out_stream << (utils::sn_map::is_1_1_or_1_n(current_map) ? "True" : "False");
+
+    utils::general::print_msg(out_stream.str(), colors::magenta, false);
   }
 }
 

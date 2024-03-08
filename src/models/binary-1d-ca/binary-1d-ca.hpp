@@ -113,6 +113,9 @@ namespace models
       is_isomorphic(const models::binary_1d_ca &other) const;
 
       bool
+      has_1_1_or_1_n_sn_maps() const;
+
+      bool
       has_non_trivial_reversed_isomorphisms(
         bool &has_trivial_partition,
         bool &has_non_trivial_partitions

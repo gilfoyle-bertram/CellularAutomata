@@ -1,7 +1,7 @@
 TARGET: main
 
-main: main.o binary-cell.o binary-1d-ca.o reversible-eca.o binary-1d-ca-manager.o rule-vector.o utils.general.o utils.math.o utils.matrix.o utils.number.o utils.polynomial.o utils.transition-graph.o
-	g++ main.o binary-cell.o binary-1d-ca.o reversible-eca.o binary-1d-ca-manager.o rule-vector.o utils.general.o utils.math.o utils.matrix.o utils.number.o utils.polynomial.o utils.transition-graph.o -o main -fopenmp
+main: main.o binary-cell.o binary-1d-ca.o reversible-eca.o binary-1d-ca-manager.o rule-vector.o utils.general.o utils.math.o utils.matrix.o utils.number.o utils.polynomial.o utils.sn-map.o utils.transition-graph.o
+	g++ main.o binary-cell.o binary-1d-ca.o reversible-eca.o binary-1d-ca-manager.o rule-vector.o utils.general.o utils.math.o utils.matrix.o utils.number.o utils.polynomial.o utils.sn-map.o utils.transition-graph.o -o main -fopenmp
 
 main.o: src/main.cpp
 	g++ -c src/main.cpp -o main.o
@@ -35,6 +35,9 @@ utils.number.o: src/utils/lib/number.cpp
 
 utils.polynomial.o: src/utils/lib/polynomial.cpp
 	g++ -c src/utils/lib/polynomial.cpp -o utils.polynomial.o
+
+utils.sn-map.o: src/utils/lib/sn-map.cpp
+	g++ -c src/utils/lib/sn-map.cpp -o utils.sn-map.o
 
 utils.transition-graph.o: src/utils/lib/transition-graph.cpp
 	g++ -c src/utils/lib/transition-graph.cpp -o utils.transition-graph.o

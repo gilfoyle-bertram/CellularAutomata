@@ -124,10 +124,15 @@ utils::general::print_row(
 }
 
 void
-utils::general::print_msg(const std::string &msg, const std::string &color)
+utils::general::print_msg(const std::string &msg, const std::string &color, bool new_line)
 {
   std::cout << color;
-  std::cout << "\n";
+
+  if (new_line)
+  {
+    std::cout << "\n";
+  }
+
   std::cout << msg;
   std::cout << '\n';
   std::cout << colors::reset;

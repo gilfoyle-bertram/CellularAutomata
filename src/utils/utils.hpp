@@ -33,7 +33,7 @@ namespace utils::general
   );
 
   void
-  print_msg(const std::string &msg, const std::string &color = "");
+  print_msg(const std::string &msg, const std::string &color = "", bool new_line = true);
 }
 
 namespace utils::math
@@ -107,6 +107,12 @@ namespace utils::polynomial
 
   void
   print(const types::polynomial &coeffs, const std::string &color = colors::cyan);
+}
+
+namespace utils::sn_map
+{
+  bool
+  is_1_1_or_1_n(const types::sn_map &sn_map);
 }
 
 namespace utils::transition_graph
