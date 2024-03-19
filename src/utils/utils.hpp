@@ -117,6 +117,9 @@ namespace utils::sn_map
 
 namespace utils::transition_graph
 {
+  bool
+  are_isomorphic(const types::transition_graph &G, const types::transition_graph &H);
+
   types::cycles
   get_cycles(const types::transition_graph &graph);
 

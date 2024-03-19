@@ -1,7 +1,46 @@
 #include "../utils.hpp"
 
+#include <algorithm>
 #include <sstream>
 #include <unordered_set>
+
+bool
+utils::transition_graph::are_isomorphic(
+  const types::transition_graph &G,
+  const types::transition_graph &H
+)
+{
+  if (G.size() != H.size())
+  {
+    return false;
+  }
+
+  std::vector<types::short_whole_num> permutation{};
+
+  for (types::short_whole_num i{}; i < G.size(); i++)
+  {
+    permutation.push_back(i);
+  }
+
+  types::transition_graph F(G.size(), 0);
+
+  do
+  {
+    for (types::short_whole_num j{}; j < permutation.size(); j++)
+    {
+      F.at(permutation.at(j)) = permutation.at(G.at(j));
+    }
+
+    if (F == H)
+    {
+      {
+        return true;
+      }
+    }
+  } while (std::next_permutation(permutation.begin(), permutation.end()));
+
+  return false;
+}
 
 // For a transition graph, a node can be in maximum of one cycle only.
 // This is because the out-degree of any node is exactly 1.
