@@ -22,7 +22,7 @@ namespace models
       read_rules(types::short_whole_num num_rules);
 
       static void
-      print_reversed_isomorphable_ecas();
+      print_reversed_pseudo_isomorphable_ecas(bool is_uniform = false);
 
       static void
       print_single_cycle_reversible_ecas();

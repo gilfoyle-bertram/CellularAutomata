@@ -518,7 +518,7 @@ models::binary_1d_ca::has_1_1_or_1_n_sn_maps() const
 }
 
 bool
-models::binary_1d_ca::has_non_trivial_reversed_isomorphisms(
+models::binary_1d_ca::has_non_trivial_reversed_pseudo_isomorphisms(
   bool &has_trivial_partition,
   bool &has_non_trivial_partitions
 ) const
@@ -812,7 +812,7 @@ models::binary_1d_ca::print_complemented_isomorphisms() const
 }
 
 void
-models::binary_1d_ca::print_reversed_isomorphisms() const
+models::binary_1d_ca::print_reversed_pseudo_isomorphisms() const
 {
   types::cycles cycles{utils::transition_graph::get_cycles(this->get_graph())};
 

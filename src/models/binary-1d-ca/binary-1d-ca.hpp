@@ -116,7 +116,7 @@ namespace models
       has_1_1_or_1_n_sn_maps() const;
 
       bool
-      has_non_trivial_reversed_isomorphisms(
+      has_non_trivial_reversed_pseudo_isomorphisms(
         bool &has_trivial_partition,
         bool &has_non_trivial_partitions
       ) const;
@@ -137,7 +137,7 @@ namespace models
       print_complemented_isomorphisms() const;
 
       void
-      print_reversed_isomorphisms() const;
+      print_reversed_pseudo_isomorphisms() const;
 
       void
       print_characterisitc_matrix() const;

@@ -66,7 +66,7 @@ models::binary_1d_ca_manager::read_rules(types::short_whole_num num_rules)
 }
 
 void
-models::binary_1d_ca_manager::print_reversed_isomorphable_ecas()
+models::binary_1d_ca_manager::print_reversed_pseudo_isomorphable_ecas(bool is_uniform)
 {
   types::short_whole_num counter{};
   types::short_whole_num num_cells{models::binary_1d_ca_manager::read_num_cells()};
@@ -85,13 +85,28 @@ models::binary_1d_ca_manager::print_reversed_isomorphable_ecas()
     std::make_pair<std::string, types::short_whole_num>("1-1/1-N SN Maps", 15)
   };
 
-  for (types::short_whole_num i{}; i < 1000; i++)
+  types::short_whole_num n = is_uniform ? 256 : 1000;
+
+  for (types::short_whole_num i{}; i < n; i++)
   {
     has_trivial_partition = false;
     has_non_trivial_partitions = false;
-    current_ca = models::reversible_eca::get_random(num_cells, boundary);
 
-    if (current_ca.has_non_trivial_reversed_isomorphisms(has_trivial_partition, has_non_trivial_partitions))
+    if (is_uniform)
+    {
+      types::rules rules(num_cells, i);
+      current_ca = models::binary_1d_ca{num_cells, 1, 1, boundary, rules};
+    }
+    else
+    {
+      current_ca = models::reversible_eca::get_random(num_cells, boundary);
+    }
+
+    if (
+      current_ca.has_non_trivial_reversed_pseudo_isomorphisms(
+        has_trivial_partition, has_non_trivial_partitions
+      )
+    )
     {
       if (!header_printed)
       {
@@ -237,7 +252,7 @@ models::binary_1d_ca_manager::access_system()
     "Print isomorphisms (exhaustive)",
     "Check isomorphism (exhaustive)",
     "Print complemented isomorphisms",
-    "Print reversed isomorphisms",
+    "Print reversed pseudo-isomorphisms",
     "Print characteristic matrix",
     "Print characteristic polynomial",
     "Print CAs by complementing rules based on equivalent RMTs",
@@ -293,7 +308,7 @@ models::binary_1d_ca_manager::access_system()
       }
 
       case 6: {
-        this->current_ca.print_reversed_isomorphisms();
+        this->current_ca.print_reversed_pseudo_isomorphisms();
         break;
       }
 
