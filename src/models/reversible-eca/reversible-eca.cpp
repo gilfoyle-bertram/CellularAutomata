@@ -1,5 +1,6 @@
 #include "reversible-eca.hpp"
 
+#include <algorithm>
 #include <unordered_map>
 #include <vector>
 
@@ -179,6 +180,24 @@ static const std::unordered_map<types::boundary, std::vector<types::rules>> last
   }
 };
 
+static bool
+group_has_rule(types::boundary boundary, types::short_whole_num group_index, types::long_whole_num rule)
+{
+  const std::vector<types::rules_group> &sub_groups{
+    regular_cell_rule_groups.at(boundary).at(group_index)
+  };
+
+  for (const auto &sub_group : sub_groups)
+  {
+    if (std::find(sub_group.first.begin(), sub_group.first.end(), rule) != sub_group.first.end())
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 static types::long_whole_num
 get_first_cell_rule(types::boundary boundary, types::short_whole_num &next_group_index)
 {
@@ -231,22 +250,29 @@ models::reversible_eca::get_random(types::short_whole_num size, types::boundary 
     throw std::invalid_argument{"Unsupported cellular automata size"};
   }
 
+  bool done{};
   types::rules random_rules(size, 0);
   types::short_whole_num next_group_index{};
-  random_rules.at(0) = get_first_cell_rule(boundary, next_group_index);
 
-  for (types::short_whole_num i{1}; i < size - 1; i++)
+  while (!done)
   {
-    random_rules.at(i) = get_regular_cell_rule(boundary, next_group_index, next_group_index);
-  }
+    random_rules.at(0) = get_first_cell_rule(boundary, next_group_index);
 
-  if (boundary == types::boundary::periodic)
-  {
-    random_rules.at(size - 1) = get_regular_cell_rule(boundary, next_group_index, next_group_index);
-  }
-  else
-  {
-    random_rules.at(size - 1) = get_last_cell_rule(boundary, next_group_index);
+    for (types::short_whole_num i{1}; i < size - 1; i++)
+    {
+      random_rules.at(i) = get_regular_cell_rule(boundary, next_group_index, next_group_index);
+    }
+
+    if (boundary == types::boundary::periodic)
+    {
+      random_rules.at(size - 1) = get_regular_cell_rule(boundary, next_group_index, next_group_index);
+      done = group_has_rule(boundary, next_group_index, random_rules.at(0));
+    }
+    else
+    {
+      random_rules.at(size - 1) = get_last_cell_rule(boundary, next_group_index);
+      done = true;
+    }
   }
 
   return models::binary_1d_ca{size, 1, 1, boundary, random_rules};
