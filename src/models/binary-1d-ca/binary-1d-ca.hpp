@@ -32,9 +32,6 @@ namespace models
       is_elementary() const;
 
       bool
-      is_reversible() const;
-
-      bool
       has_cycle_strucutre_as(const models::binary_1d_ca &other) const;
 
       bool
@@ -78,6 +75,9 @@ namespace models
         types::boundary boundary,
         const types::rules &rules
       );
+
+      bool
+      is_reversible() const;
 
       types::short_whole_num
       get_num_cells() const;

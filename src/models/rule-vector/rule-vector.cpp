@@ -136,6 +136,7 @@ models::rule_vector::print_complementable_rule_vectors()
       std::make_pair<std::string, types::short_whole_num>("S. No", 7),
       std::make_pair<std::string, types::short_whole_num>("Rules", std::max(num_cells * 6, 24)),
       std::make_pair<std::string, types::short_whole_num>("Polynomial", std::max(num_cells * 6, 24)),
+      std::make_pair<std::string, types::short_whole_num>("Reversible", 10),
     };
 
     utils::general::print_header(headings);
@@ -146,8 +147,12 @@ models::rule_vector::print_complementable_rule_vectors()
     return;
   }
 
+  models::binary_1d_ca current_ca{};
+
   for (const auto &pair : result)
   {
+    current_ca = models::binary_1d_ca{num_cells, 1, 1, boundary, pair.first.get_rules()};
+
     std::vector<std::pair<std::string, types::short_whole_num>> entries{
       std::make_pair<std::string, types::short_whole_num>(
         std::to_string(++counter), 7
@@ -158,6 +163,9 @@ models::rule_vector::print_complementable_rule_vectors()
       std::make_pair<std::string, types::short_whole_num>(
         utils::polynomial::to_string(pair.second), std::max(num_cells * 6, 24)
       ),
+      std::make_pair<std::string, types::short_whole_num>(
+        current_ca.is_reversible() ? "True" : "False", 10
+      )
     };
 
     utils::general::print_row(entries);
