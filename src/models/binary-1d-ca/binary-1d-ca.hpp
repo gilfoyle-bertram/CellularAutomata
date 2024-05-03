@@ -76,9 +76,6 @@ namespace models
         const types::rules &rules
       );
 
-      bool
-      is_reversible() const;
-
       types::short_whole_num
       get_num_cells() const;
 
@@ -110,6 +107,9 @@ namespace models
       get_current_config() const;
 
       bool
+      is_reversible() const;
+
+      bool
       is_isomorphic(const models::binary_1d_ca &other) const;
 
       bool
@@ -120,6 +120,9 @@ namespace models
         bool &has_trivial_partition,
         bool &has_non_trivial_partitions
       ) const;
+
+      bool
+      has_all_isomorphic_complements() const;
 
       void
       print_isomorphisms() const;

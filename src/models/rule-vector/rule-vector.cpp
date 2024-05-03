@@ -137,6 +137,7 @@ models::rule_vector::print_complementable_rule_vectors()
       std::make_pair<std::string, types::short_whole_num>("Rules", std::max(num_cells * 6, 24)),
       std::make_pair<std::string, types::short_whole_num>("Polynomial", std::max(num_cells * 6, 24)),
       std::make_pair<std::string, types::short_whole_num>("Reversible", 10),
+      std::make_pair<std::string, types::short_whole_num>("Isomorphic Complements", 22)
     };
 
     utils::general::print_header(headings);
@@ -165,6 +166,9 @@ models::rule_vector::print_complementable_rule_vectors()
       ),
       std::make_pair<std::string, types::short_whole_num>(
         current_ca.is_reversible() ? "True" : "False", 10
+      ),
+      std::make_pair<std::string, types::short_whole_num>(
+        current_ca.has_all_isomorphic_complements() ? "True" : "False", 22
       )
     };
 

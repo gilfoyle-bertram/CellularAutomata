@@ -622,6 +622,51 @@ models::binary_1d_ca::has_non_trivial_reversed_pseudo_isomorphisms(
   return has_reversed_isomorphisms;
 }
 
+bool
+models::binary_1d_ca::has_all_isomorphic_complements() const
+{
+  models::binary_1d_ca current_ca{};
+
+  for (types::short_whole_num i{}; i < (1U << this->num_cells); i++)
+  {
+    types::short_whole_num current_cell{};
+    types::short_whole_num current_index{i};
+    types::short_whole_num index_mask{static_cast<types::short_whole_num>((1U << this->num_cells) - 1)};
+    types::rules current_rules{};
+
+    while (index_mask)
+    {
+      if (current_index & 1)
+      {
+        current_rules.push_back(255 - this->rule_vector.at(current_cell));
+      }
+      else
+      {
+        current_rules.push_back(this->rule_vector.at(current_cell));
+      }
+
+      current_index >>= 1;
+      index_mask >>= 1;
+      current_cell += 1;
+    }
+
+    current_ca = models::binary_1d_ca{
+      this->num_cells,
+      this->l_radius,
+      this->r_radius,
+      this->boundary,
+      current_rules
+    };
+
+    if (!this->is_isomorphic(current_ca))
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 void
 models::binary_1d_ca::print_isomorphisms() const
 {
@@ -764,10 +809,12 @@ models::binary_1d_ca::print_complemented_isomorphisms() const
 
     std::vector<std::pair<std::string, types::short_whole_num>> headings{
       std::make_pair<std::string, types::short_whole_num>("S. No", 7),
-      std::make_pair<std::string, types::short_whole_num>("Rules", std::max(this->num_cells * 6, 24))
+      std::make_pair<std::string, types::short_whole_num>("Rules", std::max(this->num_cells * 6, 24)),
+      std::make_pair<std::string, types::short_whole_num>("Isomorphic", 10)
     };
 
     utils::general::print_header(headings);
+    models::binary_1d_ca current_ca{};
 
     for (types::short_whole_num i{}; i < (1U << this->num_cells); i++)
     {
@@ -792,6 +839,14 @@ models::binary_1d_ca::print_complemented_isomorphisms() const
         current_cell += 1;
       }
 
+      current_ca = models::binary_1d_ca{
+        this->num_cells,
+        this->l_radius,
+        this->r_radius,
+        this->boundary,
+        current_rules
+      };
+
       std::vector<std::pair<std::string, types::short_whole_num>> entries{
         std::make_pair<std::string, types::short_whole_num>(
           std::to_string(i + 1), 7
@@ -799,6 +854,9 @@ models::binary_1d_ca::print_complemented_isomorphisms() const
         std::make_pair<std::string, types::short_whole_num>(
           utils::vector::to_string<types::long_whole_num>(current_rules),
           std::max(this->num_cells * 6, 24)
+        ),
+        std::make_pair<std::string, types::short_whole_num>(
+          this->is_isomorphic(current_ca) ? "True" : "False", 10
         )
       };
 
