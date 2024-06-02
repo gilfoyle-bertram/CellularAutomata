@@ -122,6 +122,7 @@ models::rule_vector::is_additive() const
 void
 models::rule_vector::print_complementable_rule_vectors()
 {
+  bool header_printed{};
   types::whole_num counter{};
   types::short_whole_num num_cells{models::binary_1d_ca_manager::read_num_cells()};
   types::boundary boundary{models::binary_1d_ca_manager::read_boundary()};
@@ -130,29 +131,28 @@ models::rule_vector::print_complementable_rule_vectors()
     get_complementable_rule_vectors(num_cells, boundary)
   };
 
-  if (!result.empty())
-  {
-    std::vector<std::pair<std::string, types::short_whole_num>> headings{
-      std::make_pair<std::string, types::short_whole_num>("S. No", 7),
-      std::make_pair<std::string, types::short_whole_num>("Rules", std::max(num_cells * 6, 24)),
-      std::make_pair<std::string, types::short_whole_num>("Polynomial", std::max(num_cells * 6, 24)),
-      std::make_pair<std::string, types::short_whole_num>("Reversible", 10),
-      std::make_pair<std::string, types::short_whole_num>("Isomorphic Complements", 22)
-    };
-
-    utils::general::print_header(headings);
-  }
-  else
-  {
-    utils::general::print_msg("No complementable linear ECAs", colors::blue);
-    return;
-  }
+  std::vector<std::pair<std::string, types::short_whole_num>> headings{
+    std::make_pair<std::string, types::short_whole_num>("S. No", 7),
+    std::make_pair<std::string, types::short_whole_num>("Rules", std::max(num_cells * 6, 24)),
+    std::make_pair<std::string, types::short_whole_num>("Polynomial", std::max(num_cells * 6, 24))
+  };
 
   models::binary_1d_ca current_ca{};
 
   for (const auto &pair : result)
   {
     current_ca = models::binary_1d_ca{num_cells, 1, 1, boundary, pair.first.get_rules()};
+
+    if (!current_ca.is_reversible())
+    {
+      continue;
+    }
+
+    if (!header_printed)
+    {
+      utils::general::print_header(headings);
+      header_printed = true;
+    }
 
     std::vector<std::pair<std::string, types::short_whole_num>> entries{
       std::make_pair<std::string, types::short_whole_num>(
@@ -163,16 +163,15 @@ models::rule_vector::print_complementable_rule_vectors()
       ),
       std::make_pair<std::string, types::short_whole_num>(
         utils::polynomial::to_string(pair.second), std::max(num_cells * 6, 24)
-      ),
-      std::make_pair<std::string, types::short_whole_num>(
-        current_ca.is_reversible() ? "True" : "False", 10
-      ),
-      std::make_pair<std::string, types::short_whole_num>(
-        current_ca.has_all_isomorphic_complements() ? "True" : "False", 22
       )
     };
 
     utils::general::print_row(entries);
+  }
+
+  if (!header_printed)
+  {
+    utils::general::print_msg("No complementable reversible linear ECAs", colors::blue);
   }
 }
 

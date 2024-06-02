@@ -137,6 +137,11 @@ models::binary_1d_ca::has_complemented_isomorphisms() const
     throw std::domain_error{"Complemented isomorphisms are only supported for ECAs"};
   }
 
+  if (!this->is_reversible())
+  {
+    throw std::domain_error{"Complemented isomorphisms are only supported for reversible ECAs"};
+  }
+
   return this->rule_vector.is_complementable(this->boundary);
 }
 
@@ -809,12 +814,10 @@ models::binary_1d_ca::print_complemented_isomorphisms() const
 
     std::vector<std::pair<std::string, types::short_whole_num>> headings{
       std::make_pair<std::string, types::short_whole_num>("S. No", 7),
-      std::make_pair<std::string, types::short_whole_num>("Rules", std::max(this->num_cells * 6, 24)),
-      std::make_pair<std::string, types::short_whole_num>("Isomorphic", 10)
+      std::make_pair<std::string, types::short_whole_num>("Rules", std::max(this->num_cells * 6, 24))
     };
 
     utils::general::print_header(headings);
-    models::binary_1d_ca current_ca{};
 
     for (types::short_whole_num i{}; i < (1U << this->num_cells); i++)
     {
@@ -839,14 +842,6 @@ models::binary_1d_ca::print_complemented_isomorphisms() const
         current_cell += 1;
       }
 
-      current_ca = models::binary_1d_ca{
-        this->num_cells,
-        this->l_radius,
-        this->r_radius,
-        this->boundary,
-        current_rules
-      };
-
       std::vector<std::pair<std::string, types::short_whole_num>> entries{
         std::make_pair<std::string, types::short_whole_num>(
           std::to_string(i + 1), 7
@@ -854,9 +849,6 @@ models::binary_1d_ca::print_complemented_isomorphisms() const
         std::make_pair<std::string, types::short_whole_num>(
           utils::vector::to_string<types::long_whole_num>(current_rules),
           std::max(this->num_cells * 6, 24)
-        ),
-        std::make_pair<std::string, types::short_whole_num>(
-          this->is_isomorphic(current_ca) ? "True" : "False", 10
         )
       };
 

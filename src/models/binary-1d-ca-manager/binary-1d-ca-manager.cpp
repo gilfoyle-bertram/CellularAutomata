@@ -251,7 +251,7 @@ models::binary_1d_ca_manager::access_system()
     "Print CA details",
     "Print isomorphisms (*)",
     "Check isomorphism (*)",
-    "Print complemented isomorphisms (*)",
+    "Print complemented isomorphisms",
     "Print reversed pseudo-isomorphisms",
     "Print characteristic matrix",
     "Print characteristic polynomial",

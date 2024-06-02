@@ -36,4 +36,4 @@ make clean
 
 <br />
 
-> **NOTE** : Running the exhaustive search method - for printing isomorphisms, as well as for checking isomorphism with another automaton - will take a substantially large amount of time for automata of sizes 4 and above. It is advised to not run these two methods for automata of sizes 4 and above. In case you start running them, you can use `Ctrl + C`, to force quit the application.
+> **NOTE** : Running the exhaustive search method - for printing isomorphisms, as well as for checking isomorphism with another automaton - will take a substantially large amount of time for automata of sizes 4 and above. It is advised to not run these two methods for automata of sizes 4 and above. In case you start running them, you can use `Ctrl + C`, to force quit the application. **Menu items that invoke these methods are marked with an asterisk (\*)**.
