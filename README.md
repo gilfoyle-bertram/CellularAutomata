@@ -1,6 +1,7 @@
 ## About
 
 - Project Title : Generation of Isomorphic Cellular Automata
+- Publication : [Link](https://link.springer.com/chapter/10.1007/978-3-031-65887-7_5)
 - Student : Tarun Dittakavi
 - Degree : Master of Technology
 - Guide : Dr. Kamalika Bhattacharjee
